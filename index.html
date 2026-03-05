@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FanosCoin — Crypto for Everyone</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:       #E8A000;
+  --gold-deep:  #C47C00;
+  --gold-light: #FFD166;
+  --gold-pale:  #FFF8E7;
+  --gold-soft:  #FFF3D0;
+  --cream:      #FFFDF5;
+  --ink:        #1A1200;
+  --ink2:       #3D2E00;
+  --muted:      #8A7040;
+  --dark-sect:  #1C1400;
+  --white:      #FFFFFF;
+  --border:     rgba(232,160,0,0.2);
+  --r:          14px;
+  --r-lg:       24px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--cream); color:var(--ink); font-family:'DM Sans',sans-serif; line-height:1.6; overflow-x:hidden; }
+a { color:inherit; text-decoration:none; }
+
+/* TYPE */
+.display { font-family:'Fraunces',serif; font-weight:900; line-height:1.05; letter-spacing:-0.02em; }
+.display-xl { font-size: clamp(2.8rem, 7vw, 5.8rem); }
+.display-lg { font-size: clamp(2.2rem, 4.5vw, 3.8rem); }
+.label { font-size:0.78rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-deep); }
+
+/* LAYOUT */
+.container { max-width:1140px; margin:0 auto; padding:0 24px; }
+.section-pad { padding:100px 0; }
+
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:0 24px; transition:all 0.3s; }
+nav.scrolled { background:rgba(255,253,245,0.96); backdrop-filter:blur(12px); box-shadow:0 1px 0 var(--border); }
+.nav-inner { max-width:1140px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:72px; }
+.nav-logo { font-family:'Fraunces',serif; font-weight:900; font-size:1.5rem; color:var(--ink); }
+.nav-logo .dot { color:var(--gold); }
+.nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+.nav-links a { font-size:0.9rem; font-weight:500; color:var(--ink2); transition:color 0.2s; }
+.nav-links a:hover { color:var(--gold-deep); }
+.nav-cta { background:var(--gold); color:var(--ink)!important; font-weight:700!important; padding:10px 22px; border-radius:100px; transition:all 0.2s!important; }
+.nav-cta:hover { background:var(--gold-light)!important; transform:translateY(-1px); }
+
+/* HERO */
+.hero { min-height:100vh; background:var(--gold-pale); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:140px 24px 100px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,160,0,0.2) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,209,102,0.12) 0%, transparent 60%); }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:1px solid var(--border); border-radius:100px; padding:8px 18px; font-size:0.82rem; font-weight:600; color:var(--gold-deep); margin-bottom:32px; box-shadow:0 2px 12px rgba(232,160,0,0.12); position:relative; z-index:1; }
+.live-dot { width:8px; height:8px; border-radius:50%; background:#22C55E; box-shadow:0 0 0 3px rgba(34,197,94,0.2); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,0.2);} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0.08);} }
+.hero h1 { position:relative; z-index:1; max-width:820px; margin:0 auto 24px; color:var(--ink); }
+.hero h1 em { font-style:italic; color:var(--gold-deep); }
+.hero-sub { max-width:520px; margin:0 auto 40px; font-size:1.1rem; color:var(--muted); line-height:1.7; position:relative; z-index:1; }
+.hero-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:center; position:relative; z-index:1; }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:8px; font-family:'DM Sans',sans-serif; font-weight:700; border-radius:100px; border:none; cursor:pointer; transition:all 0.22s; white-space:nowrap; }
+.btn-primary { background:var(--gold); color:var(--ink); padding:16px 32px; font-size:1rem; box-shadow:0 4px 20px rgba(232,160,0,0.35); }
+.btn-primary:hover { background:var(--gold-light); transform:translateY(-2px); box-shadow:0 8px 30px rgba(232,160,0,0.4); }
+.btn-secondary { background:var(--white); color:var(--ink); padding:16px 28px; font-size:1rem; border:1.5px solid var(--border); }
+.btn-secondary:hover { border-color:var(--gold); transform:translateY(-2px); }
+.btn-ghost { background:transparent; color:var(--ink2); padding:16px 28px; font-size:1rem; border:1.5px solid transparent; }
+.btn-ghost:hover { color:var(--gold-deep); }
+.btn-outline-light { background:transparent; color:var(--cream); padding:16px 32px; font-size:1rem; border:1.5px solid rgba(255,253,245,0.25); }
+.btn-outline-light:hover { border-color:var(--gold-light); color:var(--gold-light); transform:translateY(-2px); }
+
+/* HERO STATS */
+.hero-stats { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:60px; position:relative; z-index:1; }
+.hero-stat { background:var(--white); border-radius:var(--r); padding:16px 24px; text-align:left; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid var(--border); }
+.hero-stat-num { font-family:'Fraunces',serif; font-weight:900; font-size:1.8rem; color:var(--gold-deep); line-height:1; }
+.hero-stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:4px; }
+
+/* TICKER */
+.ticker-bar { background:var(--gold); padding:12px 0; overflow:hidden; }
+.ticker-track { display:flex; gap:48px; white-space:nowrap; animation:ticker 28s linear infinite; width:max-content; }
+@keyframes ticker { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+.ticker-item { font-size:0.82rem; font-weight:700; color:var(--ink); display:inline-flex; align-items:center; gap:8px; }
+
+/* ABOUT */
+.intro { background:var(--white); }
+.intro-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.intro-left .label { margin-bottom:16px; display:block; }
+.intro-left p { font-size:1.05rem; color:var(--muted); line-height:1.8; margin-top:20px; }
+.intro-stats { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:40px; }
+.intro-stat { background:var(--gold-pale); border-radius:var(--r); padding:20px 24px; border:1px solid var(--border); }
+.intro-stat-num { font-family:'Fraunces',serif; font-weight:900; font-size:2rem; color:var(--gold-deep); }
+.intro-stat-lbl { font-size:0.8rem; color:var(--muted); margin-top:4px; }
+.intro-visual { background:var(--gold-soft); border-radius:var(--r-lg); aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:40px; position:relative; overflow:hidden; }
+.intro-visual::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 80% at 50% 50%, rgba(232,160,0,0.15) 0%, transparent 70%); }
+.token-circle { width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-deep)); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:900; font-size:2rem; color:var(--white); position:relative; box-shadow:0 20px 60px rgba(232,160,0,0.35); z-index:1; }
+.token-ring { position:absolute; border:2px dashed rgba(232,160,0,0.3); border-radius:50%; animation:spin-slow 20s linear infinite; }
+@keyframes spin-slow { to{transform:rotate(360deg);} }
+.intro-chips { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; position:relative; z-index:1; margin-top:32px; }
+.chip { background:var(--white); border:1px solid var(--border); border-radius:100px; padding:8px 16px; font-size:0.8rem; font-weight:600; color:var(--ink2); }
+
+/* HOW IT WORKS */
+.how { background:var(--gold-pale); }
+.steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px; }
+.step { background:var(--white); border-radius:var(--r-lg); padding:36px 30px; border:1px solid var(--border); position:relative; overflow:hidden; transition:transform 0.25s,box-shadow 0.25s; }
+.step:hover { transform:translateY(-6px); box-shadow:0 24px 60px rgba(232,160,0,0.15); }
+.step-num { font-family:'Fraunces',serif; font-weight:900; font-size:4.5rem; line-height:1; color:rgba(232,160,0,0.1); position:absolute; top:16px; right:20px; }
+.step-icon { width:52px; height:52px; border-radius:14px; background:var(--gold-soft); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:20px; border:1px solid var(--border); }
+.step h3 { font-family:'Fraunces',serif; font-weight:700; font-size:1.25rem; margin-bottom:10px; }
+.step p { font-size:0.9rem; color:var(--muted); line-height:1.7; }
+
+/* COURSE */
+.course { background:var(--dark-sect); color:var(--cream); }
+.course .label { color:var(--gold-light); }
+.course-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:80px; align-items:center; }
+.course p { color:rgba(255,253,245,0.65); font-size:1.05rem; line-height:1.8; margin:20px 0 36px; }
+.modules-list { display:flex; flex-direction:column; gap:12px; }
+.module-item { background:rgba(255,255,255,0.06); border:1px solid rgba(232,160,0,0.15); border-radius:var(--r); padding:18px 22px; display:flex; align-items:center; gap:16px; transition:all 0.2s; }
+.module-item:hover { background:rgba(232,160,0,0.08); border-color:rgba(232,160,0,0.3); }
+.module-num { width:32px; height:32px; border-radius:50%; background:rgba(232,160,0,0.15); border:1px solid rgba(232,160,0,0.3); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:900; font-size:0.85rem; color:var(--gold-light); flex-shrink:0; }
+.module-info { flex:1; }
+.module-title { font-weight:700; font-size:0.9rem; margin-bottom:3px; }
+.module-desc { font-size:0.78rem; color:rgba(255,253,245,0.5); }
+.module-arrow { color:rgba(232,160,0,0.4); }
+
+/* TOKEN */
+.token { background:var(--white); }
+.token-layout { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+.token p { color:var(--muted); font-size:1rem; line-height:1.8; margin:16px 0 28px; }
+.contract-box { background:var(--gold-pale); border:1px solid var(--border); border-radius:var(--r); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:28px; }
+.contract-addr { font-family:monospace; font-size:0.75rem; color:var(--gold-deep); word-break:break-all; flex:1; }
+.copy-btn { background:var(--gold); color:var(--ink); border:none; border-radius:8px; padding:6px 14px; font-size:0.78rem; font-weight:700; cursor:pointer; white-space:nowrap; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+.copy-btn:hover { background:var(--gold-light); }
+.tokenomics { display:flex; flex-direction:column; gap:14px; }
+.tnom-row { display:flex; align-items:center; gap:14px; }
+.tnom-bar-bg { flex:1; height:8px; background:var(--gold-soft); border-radius:100px; overflow:hidden; }
+.tnom-bar { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--gold-deep),var(--gold)); }
+.tnom-label { font-size:0.82rem; font-weight:600; color:var(--ink2); width:90px; }
+.tnom-pct { font-family:'Fraunces',serif; font-weight:700; font-size:0.9rem; color:var(--gold-deep); width:36px; text-align:right; }
+.benefits-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.benefit { background:var(--gold-pale); border-radius:var(--r); padding:18px 20px; border:1px solid var(--border); display:flex; align-items:flex-start; gap:12px; }
+.benefit-icon { font-size:1.3rem; flex-shrink:0; margin-top:2px; }
+.benefit h4 { font-size:0.85rem; font-weight:700; margin-bottom:3px; }
+.benefit p { font-size:0.76rem; color:var(--muted); }
+
+/* BUY */
+.buy { background:var(--gold-pale); }
+.buy-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:56px; }
+.buy-step { background:var(--white); border-radius:var(--r-lg); padding:28px 24px; text-align:center; border:1px solid var(--border); transition:transform 0.22s,box-shadow 0.22s; }
+.buy-step:hover { transform:translateY(-5px); box-shadow:0 16px 40px rgba(232,160,0,0.15); }
+.buy-step-n { width:40px; height:40px; border-radius:50%; background:var(--gold); color:var(--ink); font-family:'Fraunces',serif; font-weight:900; font-size:1.1rem; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+.buy-step h3 { font-family:'Fraunces',serif; font-weight:700; font-size:1rem; margin-bottom:8px; }
+.buy-step p { font-size:0.82rem; color:var(--muted); }
+
+/* BINGO */
+.bingo { background:var(--dark-sect); color:var(--cream); overflow:hidden; }
+.bingo .label { color:var(--gold-light); }
+.bingo-inner { display:grid; grid-template-columns:1fr 1.4fr; gap:60px; align-items:center; }
+.bingo p { color:rgba(255,253,245,0.65); font-size:1.05rem; line-height:1.8; margin:20px 0 32px; }
+.bingo-feats { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:32px; }
+.bingo-feat { background:rgba(255,255,255,0.05); border:1px solid rgba(232,160,0,0.15); border-radius:var(--r); padding:16px 18px; display:flex; align-items:flex-start; gap:10px; transition:background 0.2s; }
+.bingo-feat:hover { background:rgba(232,160,0,0.07); }
+.bingo-feat-icon { font-size:1.2rem; flex-shrink:0; }
+.bingo-feat h4 { font-size:0.82rem; font-weight:700; margin-bottom:3px; }
+.bingo-feat p { font-size:0.74rem; color:rgba(255,253,245,0.5); }
+.bingo-frame-wrap { border-radius:var(--r-lg); overflow:hidden; border:1px solid rgba(232,160,0,0.2); box-shadow:0 32px 80px rgba(0,0,0,0.4); }
+.bingo-frame-bar { background:rgba(255,255,255,0.06); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(232,160,0,0.1); }
+.bingo-dots { display:flex; gap:6px; }
+.bingo-dot { width:10px; height:10px; border-radius:50%; }
+.bingo-frame-url { font-family:monospace; font-size:0.72rem; color:rgba(255,253,245,0.4); }
+.bingo-frame-link { font-size:0.72rem; color:var(--gold-light); font-weight:700; }
+.bingo-iframe { width:100%; height:520px; border:none; display:block; }
+
+/* COMMUNITY */
+.community { background:var(--white); }
+.community-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:52px; }
+.comm-card { border-radius:var(--r-lg); padding:36px 30px; border:1px solid var(--border); display:flex; flex-direction:column; gap:14px; transition:transform 0.22s,box-shadow 0.22s; }
+.comm-card:hover { transform:translateY(-5px); box-shadow:0 20px 50px rgba(232,160,0,0.12); }
+.comm-card.gold-bg { background:var(--gold); border-color:var(--gold); }
+.comm-card.cream-bg { background:var(--gold-pale); }
+.comm-card.dark-bg { background:var(--ink); color:var(--cream); }
+.comm-icon { font-size:2.2rem; }
+.comm-title { font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem; }
+.comm-desc { font-size:0.88rem; opacity:0.75; line-height:1.6; }
+.comm-arrow { font-size:1.2rem; margin-top:auto; opacity:0.6; }
+
+/* FOOTER */
+footer { background:var(--ink); color:rgba(255,253,245,0.6); padding:64px 0 32px; }
+.footer-top { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:40px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:32px; }
+.footer-logo { font-family:'Fraunces',serif; font-weight:900; font-size:1.4rem; color:var(--cream); margin-bottom:12px; }
+.footer-logo .dot { color:var(--gold); }
+.footer-tagline { font-size:0.85rem; line-height:1.7; max-width:220px; }
+.footer-col h4 { font-size:0.78rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-light); margin-bottom:16px; }
+.footer-col ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.footer-col a { font-size:0.88rem; color:rgba(255,253,245,0.55); transition:color 0.2s; }
+.footer-col a:hover { color:var(--gold-light); }
+.footer-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.footer-contract { font-family:monospace; font-size:0.72rem; color:rgba(255,253,245,0.3); }
+.footer-disclaimer { font-size:0.74rem; max-width:480px; text-align:right; opacity:0.4; line-height:1.5; }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease,transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:none; }
+.reveal-delay-1 { transition-delay:0.1s; }
+.reveal-delay-2 { transition-delay:0.2s; }
+.reveal-delay-3 { transition-delay:0.3s; }
+.reveal-delay-4 { transition-delay:0.4s; }
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  .intro-grid,.course-grid,.token-layout,.bingo-inner { grid-template-columns:1fr; gap:40px; }
+  .steps-grid,.buy-steps { grid-template-columns:1fr 1fr; }
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .nav-links { display:none; }
+  .intro-visual { display:none; }
+  .community-grid { grid-template-columns:1fr; }
+}
+@media(max-width:580px) {
+  .steps-grid,.buy-steps,.benefits-grid,.bingo-feats { grid-template-columns:1fr; }
+  .intro-stats { grid-template-columns:1fr; }
+  .footer-top { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Fanos<span class="dot">●</span>Coin</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#course">Course</a></li>
+      <li><a href="#token">Token</a></li>
+      <li><a href="#buy">How to Buy</a></li>
+      <li><a href="#bingo">Bingo</a></li>
+      <li><a href="course-portal.html" class="nav-cta">Enter Course →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="live-dot"></span>
+    Live on BNB Smart Chain · Presale Sold Out
+  </div>
+  <h1 class="display display-xl">
+    Crypto that<br><em>teaches you</em><br>while you earn.
+  </h1>
+  <p class="hero-sub">
+    FanosCoin is the community token powering a full BSC development course, live bingo rewards, and real on-chain payouts — all in one ecosystem.
+  </p>
+  <div class="hero-actions">
+    <a href="#buy" class="btn btn-primary">Buy $FANOS ↗</a>
+    <a href="course-portal.html" class="btn btn-secondary">📚 Enter Course</a>
+    <a href="#bingo" class="btn btn-ghost">🎮 Play Bingo</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">&lt;30m</div><div class="hero-stat-lbl">Presale Sold Out</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">$5K</div><div class="hero-stat-lbl">Liquidity Added</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">6</div><div class="hero-stat-lbl">Course Modules</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">BSC</div><div class="hero-stat-lbl">BNB Smart Chain</div></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="ticker-item">⚡ Presale Sold Out</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">💧 Liquidity Added</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🎮 Bingo Live</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">📚 BSC Course Live</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🔗 On-Chain Payouts</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🏆 Earn Certificates</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">⚡ Presale Sold Out</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">💧 Liquidity Added</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🎮 Bingo Live</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">📚 BSC Course Live</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🔗 On-Chain Payouts</span><span style="margin:0 8px;opacity:.4">✦</span>
+    <span class="ticker-item">🏆 Earn Certificates</span><span style="margin:0 8px;opacity:.4">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" class="intro section-pad">
+  <div class="container">
+    <div class="intro-grid">
+      <div class="intro-left reveal">
+        <span class="label">Who we are</span>
+        <h2 class="display display-lg" style="margin-top:14px;">Built by the community,<br>for builders.</h2>
+        <p>FanosCoin started as a grassroots project by BSC developers who wanted crypto to actually mean something — not just speculation, but education, real skills, and community rewards.</p>
+        <p style="margin-top:12px;">We sold out our presale in under 30 minutes. Now we're building the ecosystem: a BSC dev course, a live bingo game with on-chain payouts, and a token that unlocks it all.</p>
+        <div class="intro-stats">
+          <div class="intro-stat reveal reveal-delay-1"><div class="intro-stat-num">&lt;30m</div><div class="intro-stat-lbl">Presale sold out</div></div>
+          <div class="intro-stat reveal reveal-delay-2"><div class="intro-stat-num">$5,000</div><div class="intro-stat-lbl">Liquidity locked</div></div>
+          <div class="intro-stat reveal reveal-delay-3"><div class="intro-stat-num">100%</div><div class="intro-stat-lbl">Community owned</div></div>
+          <div class="intro-stat reveal reveal-delay-4"><div class="intro-stat-num">BSC</div><div class="intro-stat-lbl">Chain ID 56</div></div>
+        </div>
+      </div>
+      <div class="intro-visual reveal reveal-delay-2">
+        <div class="token-circle">
+          $F
+          <div class="token-ring" style="width:160px;height:160px;"></div>
+          <div class="token-ring" style="width:210px;height:210px;animation-direction:reverse;animation-duration:30s;"></div>
+        </div>
+        <div class="intro-chips">
+          <span class="chip">BEP-20</span>
+          <span class="chip">On-Chain</span>
+          <span class="chip">BSC</span>
+          <span class="chip">Community</span>
+          <span class="chip">DeFi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how section-pad">
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto;">
+      <span class="label">How it works</span>
+      <h2 class="display display-lg" style="margin-top:14px;">Three ways to win<br>with $FANOS</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">01</div>
+        <div class="step-icon">💰</div>
+        <h3>Buy & Hold</h3>
+        <p>Purchase $FANOS on PancakeSwap with BNB. Holding gives you access to the course, bingo game, and all future ecosystem features.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">02</div>
+        <div class="step-icon">📚</div>
+        <h3>Learn & Earn</h3>
+        <p>Complete the 6-module BSC development course. Pass quizzes, track progress on-chain, and earn a verifiable certificate on completion.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num">03</div>
+        <div class="step-icon">🎮</div>
+        <h3>Play & Win</h3>
+        <p>Join live multiplayer bingo games. Winners get paid instantly via smart contract — no middleman, no delays, just $FANOS in your wallet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSE -->
+<section id="course" class="course section-pad">
+  <div class="container">
+    <div class="course-grid">
+      <div class="reveal">
+        <span class="label">BSC Development Course</span>
+        <h2 class="display display-lg" style="margin-top:14px;color:#fff;">Learn to build<br>on BNB Smart Chain.</h2>
+        <p>From zero to deploying your first smart contract. Six modules taught by builders, for builders — completely free for $FANOS holders.</p>
+        <a href="course-portal.html" class="btn btn-primary">Enter Course Portal →</a>
+      </div>
+      <div class="modules-list reveal reveal-delay-2">
+        <div class="module-item"><div class="module-num">1</div><div class="module-info"><div class="module-title">Blockchain Fundamentals</div><div class="module-desc">Wallets, gas, consensus, BSCScan</div></div><span class="module-arrow">→</span></div>
+        <div class="module-item"><div class="module-num">2</div><div class="module-info"><div class="module-title">Solidity Smart Contracts</div><div class="module-desc">Write, compile and deploy with Remix</div></div><span class="module-arrow">→</span></div>
+        <div class="module-item"><div class="module-num">3</div><div class="module-info"><div class="module-title">BEP-20 Token Creation</div><div class="module-desc">Create your own token on BSC</div></div><span class="module-arrow">→</span></div>
+        <div class="module-item"><div class="module-num">4</div><div class="module-info"><div class="module-title">Smart Contract Security</div><div class="module-desc">Reentrancy, access control, audits</div></div><span class="module-arrow">→</span></div>
+        <div class="module-item"><div class="module-num">5</div><div class="module-info"><div class="module-title">DApp Frontend with Web3</div><div class="module-desc">ethers.js, wagmi, wallet connection</div></div><span class="module-arrow">→</span></div>
+        <div class="module-item"><div class="module-num">6</div><div class="module-info"><div class="module-title">Launch & Verify on BSCScan</div><div class="module-desc">Mainnet, verification, PancakeSwap LP</div></div><span class="module-arrow">→</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOKEN -->
+<section id="token" class="token section-pad">
+  <div class="container">
+    <div style="text-align:center;max-width:560px;margin:0 auto 64px;" class="reveal">
+      <span class="label">Tokenomics</span>
+      <h2 class="display display-lg" style="margin-top:14px;">$FANOS token details</h2>
+    </div>
+    <div class="token-layout">
+      <div class="reveal">
+        <p>$FANOS is a BEP-20 token on BNB Smart Chain. It's the key that unlocks every part of the FanosCoin ecosystem — courses, bingo, and future features.</p>
+        <div class="contract-box">
+          <div class="contract-addr">0x6B79Be9880c7E363a4AE2489eA7edb7d07617c6F</div>
+          <button class="copy-btn" onclick="copyContract()">Copy</button>
+        </div>
+        <div class="tokenomics">
+          <div class="tnom-row"><div class="tnom-label">Presale</div><div class="tnom-bar-bg"><div class="tnom-bar" style="width:50%;"></div></div><div class="tnom-pct">50%</div></div>
+          <div class="tnom-row"><div class="tnom-label">Liquidity</div><div class="tnom-bar-bg"><div class="tnom-bar" style="width:25%;opacity:0.75;"></div></div><div class="tnom-pct">25%</div></div>
+          <div class="tnom-row"><div class="tnom-label">Team</div><div class="tnom-bar-bg"><div class="tnom-bar" style="width:15%;opacity:0.55;"></div></div><div class="tnom-pct">15%</div></div>
+          <div class="tnom-row"><div class="tnom-label">Marketing</div><div class="tnom-bar-bg"><div class="tnom-bar" style="width:10%;opacity:0.4;"></div></div><div class="tnom-pct">10%</div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <h3 class="display" style="font-size:1.3rem;margin-bottom:20px;">Holder benefits</h3>
+        <div class="benefits-grid">
+          <div class="benefit"><div class="benefit-icon">📚</div><div><h4>Free Course Access</h4><p>Full BSC course, free for all holders</p></div></div>
+          <div class="benefit"><div class="benefit-icon">🎮</div><div><h4>Bingo Rewards</h4><p>Play and win real $FANOS in live games</p></div></div>
+          <div class="benefit"><div class="benefit-icon">🏆</div><div><h4>Certificates</h4><p>Verifiable on-chain completion proof</p></div></div>
+          <div class="benefit"><div class="benefit-icon">🔗</div><div><h4>On-Chain Payouts</h4><p>Smart contract pays winners instantly</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO BUY -->
+<section id="buy" class="buy section-pad">
+  <div class="container">
+    <div style="text-align:center;max-width:500px;margin:0 auto;" class="reveal">
+      <span class="label">How to Buy</span>
+      <h2 class="display display-lg" style="margin-top:14px;">Get $FANOS<br>in four steps.</h2>
+    </div>
+    <div class="buy-steps">
+      <div class="buy-step reveal reveal-delay-1"><div class="buy-step-n">1</div><h3>Get MetaMask</h3><p>Install MetaMask and add BNB Smart Chain network (Chain ID: 56)</p></div>
+      <div class="buy-step reveal reveal-delay-2"><div class="buy-step-n">2</div><h3>Buy BNB</h3><p>Purchase BNB from any exchange and send it to your MetaMask wallet</p></div>
+      <div class="buy-step reveal reveal-delay-3"><div class="buy-step-n">3</div><h3>Go to PancakeSwap</h3><p>Visit pancakeswap.finance and connect your wallet</p></div>
+      <div class="buy-step reveal reveal-delay-4"><div class="buy-step-n">4</div><h3>Swap for $FANOS</h3><p>Paste the contract address and swap BNB for $FANOS</p></div>
+    </div>
+    <div style="text-align:center;margin-top:40px;" class="reveal">
+      <a href="https://pancakeswap.finance" target="_blank" class="btn btn-primary" style="font-size:1.05rem;padding:18px 40px;">Buy on PancakeSwap ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- BINGO -->
+<section id="bingo" class="bingo section-pad">
+  <div class="container">
+    <div class="bingo-inner">
+      <div class="reveal">
+        <span class="label">Fanos Bingo</span>
+        <h2 class="display display-lg" style="margin-top:14px;color:#fff;">Play. Win.<br>Get paid on-chain.</h2>
+        <p>Our live multiplayer bingo game runs on a BSC smart contract. Deposit $FANOS, play with the community, and winners get paid automatically — no waiting, no middleman.</p>
+        <div class="bingo-feats">
+          <div class="bingo-feat"><span class="bingo-feat-icon">🔗</span><div><h4>On-Chain Payouts</h4><p>Smart contract pays automatically</p></div></div>
+          <div class="bingo-feat"><span class="bingo-feat-icon">👥</span><div><h4>Multiplayer</h4><p>Play live with $FANOS holders</p></div></div>
+          <div class="bingo-feat"><span class="bingo-feat-icon">🪙</span><div><h4>Real Rewards</h4><p>Win real $FANOS every game</p></div></div>
+          <div class="bingo-feat"><span class="bingo-feat-icon">🔒</span><div><h4>Secure</h4><p>Backend-signed, cheat-proof</p></div></div>
+        </div>
+        <a href="https://fanosbnb.site/" target="_blank" class="btn btn-primary">Open Full Game ↗</a>
+      </div>
+      <div class="bingo-frame-wrap reveal reveal-delay-2">
+        <div class="bingo-frame-bar">
+          <div class="bingo-dots">
+            <div class="bingo-dot" style="background:#FF5F57;"></div>
+            <div class="bingo-dot" style="background:#FFBD2E;"></div>
+            <div class="bingo-dot" style="background:#28C840;"></div>
+          </div>
+          <div class="bingo-frame-url">fanosbnb.site</div>
+          <a href="https://fanosbnb.site/" target="_blank" class="bingo-frame-link">Open ↗</a>
+        </div>
+        <iframe class="bingo-iframe" src="https://fanosbnb.site/" title="Fanos Bingo Game" loading="lazy" allow="clipboard-write"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community section-pad">
+  <div class="container">
+    <div style="text-align:center;max-width:500px;margin:0 auto;" class="reveal">
+      <span class="label">Community</span>
+      <h2 class="display display-lg" style="margin-top:14px;">Join the movement.</h2>
+    </div>
+    <div class="community-grid">
+      <a href="https://t.me/fanoscoin" target="_blank" class="comm-card gold-bg reveal reveal-delay-1">
+        <div class="comm-icon">✈️</div>
+        <div class="comm-title">Telegram</div>
+        <div class="comm-desc">Chat with the community, get updates and join game sessions live.</div>
+        <div class="comm-arrow">→</div>
+      </a>
+      <a href="course-portal.html" class="comm-card cream-bg reveal reveal-delay-2">
+        <div class="comm-icon">📚</div>
+        <div class="comm-title">BSC Course</div>
+        <div class="comm-desc">Learn to build on BNB Smart Chain. 6 modules, quizzes, and a certificate.</div>
+        <div class="comm-arrow">→</div>
+      </a>
+      <a href="https://twitter.com/fanoscoin" target="_blank" class="comm-card dark-bg reveal reveal-delay-3">
+        <div class="comm-icon">𝕏</div>
+        <div class="comm-title">Twitter / X</div>
+        <div class="comm-desc">Follow for announcements, launches, and community highlights.</div>
+        <div class="comm-arrow" style="color:var(--gold-light);">→</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Fanos<span class="dot">●</span>Coin</div>
+        <p class="footer-tagline">Crypto that teaches you while you earn. Built on BNB Smart Chain.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="course-portal.html">Course Portal</a></li>
+          <li><a href="#course">BSC Course</a></li>
+          <li><a href="#">Whitepaper</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Ecosystem</h4>
+        <ul>
+          <li><a href="#token">$FANOS Token</a></li>
+          <li><a href="#bingo">Bingo Game</a></li>
+          <li><a href="https://pancakeswap.finance" target="_blank">PancakeSwap</a></li>
+          <li><a href="https://bscscan.com" target="_blank">BSCScan</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="https://t.me/fanoscoin" target="_blank">Telegram</a></li>
+          <li><a href="https://twitter.com/fanoscoin" target="_blank">Twitter / X</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-contract">Contract: 0x6B79Be9880c7E363a4AE2489eA7edb7d07617c6F</div>
+      <div class="footer-disclaimer">$FANOS is a community token. Crypto investments are volatile. Do your own research before investing.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Sticky nav
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+// Copy contract
+function copyContract() {
+  navigator.clipboard.writeText('0x6B79Be9880c7E363a4AE2489eA7edb7d07617c6F');
+  const btn = document.querySelector('.copy-btn');
+  const orig = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.style.background = '#22C55E';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
