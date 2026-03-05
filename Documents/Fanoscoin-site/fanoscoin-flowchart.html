@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FanosCoin — Platform Flowchart</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5A623; --gold-light: #FFD166; --dark: #0A0A0F;
+    --dark2: #12121A; --dark3: #1A1A26; --text: #E8E8F0;
+    --muted: #7A7A9A; --green: #00E5A0; --red: #FF4D6D;
+    --blue: #4D9CFF; --purple: #A855F7; --border: rgba(245,166,35,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--dark); color: var(--text);
+    font-family: 'Syne', sans-serif; min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 56px; }
+  .header-logo { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+  .header-title { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 10px; }
+  .header-sub { color: var(--muted); font-size: 0.9rem; }
+
+  /* LEGEND */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+    margin-bottom: 48px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* FLOWCHART CONTAINER */
+  .chart { max-width: 1100px; margin: 0 auto; position: relative; }
+
+  /* ROWS */
+  .row { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin-bottom: 0; position: relative; }
+  .row.top { margin-bottom: 0; }
+
+  /* NODES */
+  .node {
+    position: relative; border-radius: 12px; padding: 16px 20px;
+    text-align: center; min-width: 150px; max-width: 180px;
+    border: 1.5px solid; transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default; z-index: 2;
+  }
+  .node:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+  .node-icon { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+  .node-title { font-weight: 800; font-size: 0.85rem; margin-bottom: 4px; line-height: 1.3; }
+  .node-desc { font-size: 0.68rem; color: var(--muted); line-height: 1.4; }
+
+  /* NODE TYPES */
+  .node.entry    { background: linear-gradient(135deg, #1a1500, #2a2000); border-color: var(--gold); }
+  .node.entry .node-title { color: var(--gold); }
+  .node.action   { background: var(--dark2); border-color: rgba(77,156,255,0.3); }
+  .node.action .node-title { color: var(--blue); }
+  .node.gate     { background: linear-gradient(135deg, #0d1a0d, #122012); border-color: rgba(0,229,160,0.3); }
+  .node.gate .node-title { color: var(--green); }
+  .node.feature  { background: var(--dark3); border-color: var(--border); }
+  .node.feature .node-title { color: var(--text); }
+  .node.reward   { background: linear-gradient(135deg, #1a0a00, #2a1500); border-color: rgba(245,166,35,0.4); }
+  .node.reward .node-title { color: var(--gold-light); }
+  .node.terminal { background: linear-gradient(135deg, #1a0d1a, #200d20); border-color: rgba(168,85,247,0.4); }
+  .node.terminal .node-title { color: var(--purple); }
+
+  /* DIAMOND (decision) */
+  .diamond-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 160px; min-width: 160px; height: 100px; z-index: 2; }
+  .diamond {
+    width: 130px; height: 80px; background: linear-gradient(135deg, #0d1a0d, #122012);
+    border: 1.5px solid rgba(0,229,160,0.35); transform: rotate(45deg);
+    transition: transform 0.2s; cursor: default;
+  }
+  .diamond:hover { transform: rotate(45deg) scale(1.05); }
+  .diamond-label {
+    position: absolute; text-align: center; font-size: 0.72rem; font-weight: 800;
+    color: var(--green); line-height: 1.3; width: 100px; z-index: 3;
+    pointer-events: none;
+  }
+
+  /* SVG ARROWS */
+  .arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+  .arrow-line { stroke: rgba(245,166,35,0.25); stroke-width: 1.5; fill: none; stroke-dasharray: 5,3; }
+  .arrow-line.solid { stroke: rgba(245,166,35,0.4); stroke-dasharray: none; stroke-width: 2; }
+  .arrow-line.green { stroke: rgba(0,229,160,0.35); }
+  .arrow-line.red { stroke: rgba(255,77,109,0.35); }
+  .arrow-line.blue { stroke: rgba(77,156,255,0.3); }
+  .arrow-label {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    fill: var(--muted);
+  }
+  .arrow-label.green { fill: var(--green); }
+  .arrow-label.red { fill: var(--red); }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;
+    text-align: center; margin: 10px 0 6px;
+  }
+
+  /* CONNECTOR LINES (CSS) */
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .vline { width: 2px; background: linear-gradient(to bottom, rgba(245,166,35,0.3), rgba(245,166,35,0.1)); flex-shrink: 0; }
+  .hline { height: 2px; background: linear-gradient(to right, rgba(245,166,35,0.1), rgba(245,166,35,0.3), rgba(245,166,35,0.1)); flex-shrink: 0; }
+  .arrow-down::after {
+    content: '▼'; display: block; text-align: center;
+    color: rgba(245,166,35,0.5); font-size: 0.6rem; margin-top: -4px;
+  }
+  .arrow-right::after {
+    content: '▶'; display: block;
+    color: rgba(245,166,35,0.5); font-size: 0.6rem; margin-left: -4px;
+  }
+
+  /* GRID LAYOUT */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  /* SWIMLANES */
+  .lane {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 10px;
+  }
+
+  /* FULL LAYOUT */
+  .full-chart {
+    position: relative;
+    width: 100%;
+  }
+
+  /* NODE GRID */
+  .ng { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .ng .sep { color: rgba(245,166,35,0.3); font-size: 1.2rem; }
+
+  /* CONNECTOR */
+  .connector {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .conn-v { width: 2px; background: rgba(245,166,35,0.25); }
+  .conn-arrow { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid rgba(245,166,35,0.4); }
+  .conn-arrow.green { border-top-color: rgba(0,229,160,0.5); }
+  .conn-arrow.blue  { border-top-color: rgba(77,156,255,0.4); }
+  .conn-h {
+    height: 2px; background: rgba(245,166,35,0.2);
+    position: relative;
+  }
+
+  /* BRANCH */
+  .branch { display: flex; align-items: flex-start; justify-content: center; gap: 0; }
+  .branch-col { display: flex; flex-direction: column; align-items: center; }
+  .branch-label { font-family:'Space Mono',monospace; font-size:0.62rem; color: var(--green); margin-bottom:4px; font-weight:700; }
+  .branch-label.no { color: var(--red); }
+
+  /* MULTI-BRANCH ROW */
+  .multi { display: flex; align-items: flex-start; justify-content: center; gap: 24px; }
+  .multi-col { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 200px; }
+
+  /* STEP BADGE */
+  .step-badge {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; font-weight: 700;
+    background: rgba(245,166,35,0.1); color: var(--gold); border: 1px solid rgba(245,166,35,0.2);
+    padding: 2px 8px; border-radius: 100px; margin-bottom: 4px; text-transform: uppercase;
+  }
+
+  .divider {
+    width: 100%; max-width: 800px; margin: 8px auto;
+    border: none; border-top: 1px dashed rgba(245,166,35,0.1);
+  }
+
+  /* TOOLTIP */
+  .node[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: var(--dark2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; font-size: 0.72rem; color: var(--text); white-space: nowrap;
+    z-index: 100; pointer-events: none;
+  }
+
+  @media(max-width:700px) {
+    .multi { flex-direction: column; align-items: center; }
+    .multi-col { max-width: 100%; }
+    .node { min-width: 130px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">FanosCoin Platform</div>
+  <h1 class="header-title">User Flow & Architecture</h1>
+  <p class="header-sub">Complete journey from first visit to certificate & rewards</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> Entry Point</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div> Action / Page</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Decision / Gate</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#888;"></div> Feature</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold-light);"></div> Reward</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple);"></div> End State</div>
+</div>
+
+<div class="chart">
+
+  <!-- ═══ ROW 1: ENTRY ═══ -->
+  <div class="section-label">Entry</div>
+  <div class="connector"><div class="conn-v" style="height:0;"></div></div>
+
+  <div style="display:flex;justify-content:center;">
+    <div class="node entry" style="max-width:220px;" data-tip="fanoscoin.html">
+      <span class="node-icon">🌐</span>
+      <div class="node-title">FanosCoin Website</div>
+      <div class="node-desc">fanoscoin.html — hero, tokenomics, bingo embed, course CTA</div>
+    </div>
+  </div>
+
+  <!-- down -->
+  <div class="connector"><div class="conn-v" style="height:28px;"></div><div class="conn-arrow"></div></div>
+
+  <!-- ═══ ROW 2: TOP-LEVEL PATHS ═══ -->
+  <div class="section-label">Choose Path</div>
+  <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;">
+
+    <!-- Horizontal connector bar -->
+    <div style="display:flex;align-items:center;gap:0;margin-top:20px;">
+
+      <!-- LEFT: Buy Token -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-h" style="width:150px;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-arrow" style="transform:rotate(-90deg);border-top-color:rgba(77,156,255,0.4);margin-bottom:4px;"></div>
+        <div class="node action" data-tip="PancakeSwap via How To Buy guide">
+          <span class="node-icon">💰</span>
+          <div class="node-title">Buy $FANOS</div>
+          <div class="node-desc">PancakeSwap → swap BNB for $FANOS</div>
+        </div>
+      </div>
+
+      <!-- center stem -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-h" style="width:100px;"></div>
+        <div class="conn-h" style="width:100px;margin-top:-2px;background:transparent;"></div>
+      </div>
+
+      <!-- CENTER: Course Portal -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-arrow" style="margin-bottom:4px;"></div>
+        <div class="node action" style="border-color:rgba(245,166,35,0.4);" data-tip="course-portal.html">
+          <span class="node-icon">📚</span>
+          <div class="node-title">Course Portal</div>
+          <div class="node-desc">Enter the BSC Development Masterclass</div>
+        </div>
+      </div>
+
+      <!-- center stem right -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-h" style="width:100px;"></div>
+        <div class="conn-h" style="width:100px;margin-top:-2px;background:transparent;"></div>
+      </div>
+
+      <!-- RIGHT: Bingo Game -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="conn-arrow" style="transform:rotate(90deg);border-top-color:rgba(0,229,160,0.5);margin-bottom:4px;"></div>
+        <div class="node gate" data-tip="fanosbnb.site — embedded + linked">
+          <span class="node-icon">🎮</span>
+          <div class="node-title">Bingo Game</div>
+          <div class="node-desc">fanosbnb.site — live multiplayer</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── BINGO BRANCH (right side, positioned below bingo node) ─── -->
+  <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:0;">
+
+    <div style="display:flex;gap:0;align-items:flex-start;width:100%;max-width:900px;">
+
+      <!-- BUY COLUMN -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;max-width:200px;">
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow blue"></div></div>
+        <div class="node feature">
+          <span class="node-icon">🥞</span>
+          <div class="node-title">PancakeSwap</div>
+          <div class="node-desc">Add liquidity, trade, hold $FANOS</div>
+        </div>
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow"></div></div>
+        <div class="node reward">
+          <span class="node-icon">📈</span>
+          <div class="node-title">Holder Benefits</div>
+          <div class="node-desc">Course access · Bingo rewards · Community</div>
+        </div>
+      </div>
+
+      <!-- COURSE COLUMN -->
+      <div style="flex:1.4;display:flex;flex-direction:column;align-items:center;max-width:260px;">
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow"></div></div>
+
+        <!-- WALLET GATE -->
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;width:100%;">
+          <div style="width:140px;height:78px;position:relative;display:flex;align-items:center;justify-content:center;">
+            <div style="width:110px;height:65px;background:linear-gradient(135deg,#0d1a0d,#122012);border:1.5px solid rgba(0,229,160,0.35);transform:rotate(45deg);border-radius:4px;"></div>
+            <div style="position:absolute;font-size:0.7rem;font-weight:800;color:var(--green);text-align:center;line-height:1.3;width:90px;">Wallet<br>Connected?</div>
+          </div>
+
+          <!-- YES branch -->
+          <div style="display:flex;gap:24px;align-items:flex-start;margin-top:4px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="branch-label no" style="margin-bottom:6px;">✕ No</div>
+              <div class="connector"><div class="conn-v" style="height:14px;"></div><div class="conn-arrow" style="border-top-color:rgba(255,77,109,0.5);"></div></div>
+              <div class="node feature" style="max-width:140px;">
+                <span class="node-icon">👛</span>
+                <div class="node-title">Choose Wallet</div>
+                <div class="node-desc">MetaMask · WalletConnect · Coinbase · Trust</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="branch-label" style="margin-bottom:6px;">✓ Yes</div>
+              <div class="connector"><div class="conn-v" style="height:14px;"></div><div class="conn-arrow green"></div></div>
+              <div class="node gate" style="max-width:140px;">
+                <span class="node-icon">📊</span>
+                <div class="node-title">Dashboard</div>
+                <div class="node-desc">Progress · Stats · $FANOS balance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- wallet connects → merges to dashboard -->
+        <div class="connector" style="margin-top:4px;"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow"></div></div>
+
+        <!-- COURSE FLOW -->
+        <div class="node action" style="width:100%;max-width:240px;">
+          <span class="node-icon">📖</span>
+          <div class="node-title">Module 1–6</div>
+          <div class="node-desc">Blockchain → Solidity → BEP-20 → Security → DApp → Launch</div>
+        </div>
+
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow"></div></div>
+
+        <div style="width:120px;height:72px;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div style="width:100px;height:58px;background:linear-gradient(135deg,#0d1a0d,#122012);border:1.5px solid rgba(0,229,160,0.35);transform:rotate(45deg);border-radius:4px;"></div>
+          <div style="position:absolute;font-size:0.68rem;font-weight:800;color:var(--green);text-align:center;line-height:1.3;width:80px;">Pass Quiz?<br><span style="font-weight:400;color:var(--muted);">≥75%</span></div>
+        </div>
+
+        <div style="display:flex;gap:20px;align-items:flex-start;margin-top:4px;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="branch-label no">✕ Retry</div>
+            <div class="connector"><div class="conn-v" style="height:12px;"></div><div class="conn-arrow" style="border-top-color:rgba(255,77,109,0.5);"></div></div>
+            <div class="node feature" style="max-width:110px;padding:10px 12px;">
+              <span class="node-icon" style="font-size:1.1rem;">🔄</span>
+              <div class="node-title">Retry Quiz</div>
+              <div class="node-desc">Unlimited attempts</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="branch-label">✓ Pass</div>
+            <div class="connector"><div class="conn-v" style="height:12px;"></div><div class="conn-arrow green"></div></div>
+            <div class="node gate" style="max-width:110px;padding:10px 12px;">
+              <span class="node-icon" style="font-size:1.1rem;">✅</span>
+              <div class="node-title">Next Module</div>
+              <div class="node-desc">Unlocks automatically</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector" style="margin-top:8px;"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow"></div></div>
+
+        <div style="width:120px;height:72px;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div style="width:100px;height:58px;background:linear-gradient(135deg,#0d1a0d,#122012);border:1.5px solid rgba(0,229,160,0.35);transform:rotate(45deg);border-radius:4px;"></div>
+          <div style="position:absolute;font-size:0.68rem;font-weight:800;color:var(--green);text-align:center;line-height:1.3;width:80px;">All 6<br>Complete?</div>
+        </div>
+
+        <div class="connector" style="margin-top:4px;"><div class="conn-v" style="height:16px;"></div><div class="conn-arrow green"></div></div>
+
+        <div class="node terminal" style="width:100%;max-width:240px;">
+          <span class="node-icon">🏆</span>
+          <div class="node-title">Certificate Issued</div>
+          <div class="node-desc">Auto-issued to wallet · Unique hash · Stored on Supabase</div>
+        </div>
+
+      </div>
+
+      <!-- BINGO COLUMN -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;max-width:200px;">
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow green"></div></div>
+        <div class="node feature">
+          <span class="node-icon">👛</span>
+          <div class="node-title">Connect Wallet</div>
+          <div class="node-desc">Wallet address passed via URL param</div>
+        </div>
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow green"></div></div>
+        <div class="node action">
+          <span class="node-icon">🎰</span>
+          <div class="node-title">Join Game Room</div>
+          <div class="node-desc">Deposit $FANOS · Get bingo card</div>
+        </div>
+        <div class="connector"><div class="conn-v" style="height:20px;"></div><div class="conn-arrow green"></div></div>
+
+        <div style="width:120px;height:72px;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div style="width:100px;height:58px;background:linear-gradient(135deg,#0d1a0d,#122012);border:1.5px solid rgba(0,229,160,0.35);transform:rotate(45deg);border-radius:4px;"></div>
+          <div style="position:absolute;font-size:0.68rem;font-weight:800;color:var(--green);text-align:center;line-height:1.3;width:80px;">Bingo?</div>
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-top:4px;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="branch-label no">✕ No</div>
+            <div class="connector"><div class="conn-v" style="height:12px;"></div><div class="conn-arrow" style="border-top-color:rgba(255,77,109,0.5);"></div></div>
+            <div class="node feature" style="max-width:90px;padding:10px 10px;">
+              <span class="node-icon" style="font-size:1rem;">🔄</span>
+              <div class="node-title">Keep Playing</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="branch-label">✓ Win</div>
+            <div class="connector"><div class="conn-v" style="height:12px;"></div><div class="conn-arrow green"></div></div>
+            <div class="node reward" style="max-width:90px;padding:10px 10px;">
+              <span class="node-icon" style="font-size:1rem;">🪙</span>
+              <div class="node-title">Claim Payout</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector" style="margin-top:8px;"><div class="conn-v" style="height:16px;"></div><div class="conn-arrow"></div></div>
+        <div class="node terminal" style="max-width:180px;">
+          <span class="node-icon">✅</span>
+          <div class="node-title">Smart Contract Pays</div>
+          <div class="node-desc">BingoAutoPayout sends $FANOS to winner's wallet instantly</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ BOTTOM: SUPABASE ═══ -->
+  <div style="margin-top:48px;border-top:1px dashed rgba(245,166,35,0.1);padding-top:32px;">
+    <div class="section-label">Backend / Data Layer</div>
+    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:12px;">
+
+      <div class="node feature" style="max-width:160px;">
+        <span class="node-icon">🗄️</span>
+        <div class="node-title">Supabase DB</div>
+        <div class="node-desc">users · progress · quiz_results · certificates</div>
+      </div>
+      <div class="node feature" style="max-width:160px;">
+        <span class="node-icon">📝</span>
+        <div class="node-title">Enrollments</div>
+        <div class="node-desc">Auto-enrolled on wallet connect</div>
+      </div>
+      <div class="node feature" style="max-width:160px;">
+        <span class="node-icon">📊</span>
+        <div class="node-title">Progress Tracking</div>
+        <div class="node-desc">Per-module completion + quiz scores saved</div>
+      </div>
+      <div class="node feature" style="max-width:160px;">
+        <span class="node-icon">⚙️</span>
+        <div class="node-title">Admin Panel</div>
+        <div class="node-desc">Students · Completion rates · CSV export</div>
+      </div>
+      <div class="node feature" style="max-width:160px;">
+        <span class="node-icon">🔐</span>
+        <div class="node-title">BSC Contract</div>
+        <div class="node-desc">BingoAutoPayout on BNB Smart Chain</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER NOTE -->
+<div style="text-align:center;margin-top:48px;color:var(--muted);font-size:0.75rem;font-family:'Space Mono',monospace;">
+  FANOSCOIN PLATFORM · BSC CHAIN ID 56 · CONTRACT 0x6B79...617c6F
+</div>
+
+</body>
+</html>

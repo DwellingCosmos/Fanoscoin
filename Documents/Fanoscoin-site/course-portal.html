@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FanosCoin — BSC Course Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#F5A623; --gold-light:#FFD166; --dark:#0A0A0F; --dark2:#12121A;
+  --dark3:#1A1A26; --text:#E8E8F0; --muted:#7A7A9A; --green:#00E5A0;
+  --red:#FF4D6D; --blue:#4D9CFF; --border:rgba(245,166,35,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+
+/* CONNECT SCREEN */
+#connectScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(245,166,35,0.07) 0%,transparent 70%);
+  padding:20px;
+}
+.connect-card{
+  background:var(--dark2);border:1px solid var(--border);border-radius:20px;
+  padding:48px 40px;text-align:center;max-width:460px;width:100%;
+}
+.logo{font-family:'Space Mono',monospace;font-weight:700;font-size:1.2rem;color:var(--gold);margin-bottom:28px;display:block;}
+.logo span{color:var(--text);}
+h1{font-size:2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;}
+.sub{color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:36px;}
+#connectBtn{
+  width:100%;padding:16px;background:var(--gold);color:#0A0A0F;border:none;
+  border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;
+  font-family:'Syne',sans-serif;transition:all 0.2s;display:flex;
+  align-items:center;justify-content:center;gap:10px;
+}
+#connectBtn:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,166,35,0.3);}
+#connectBtn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+#connectError{color:var(--red);font-size:0.82rem;margin-top:14px;padding:10px 14px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:8px;display:none;text-align:left;}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
+.feat{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:left;}
+.feat-icon{font-size:1.4rem;margin-bottom:8px;}
+.feat-title{font-weight:700;font-size:0.82rem;margin-bottom:3px;}
+.feat-desc{color:var(--muted);font-size:0.72rem;line-height:1.5;}
+
+/* PORTAL */
+#portal{display:none;}
+.layout{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+  width:250px;background:var(--dark2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;
+}
+.sb-logo{padding:22px 20px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-weight:700;color:var(--gold);font-size:1rem;text-decoration:none;display:block;}
+.sb-logo span{color:var(--text);}
+.sb-wallet{padding:14px 20px;border-bottom:1px solid var(--border);}
+.sb-wallet-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.sb-wallet-addr{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--gold);word-break:break-all;}
+.sb-section{padding:14px 20px 6px;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.sb-item{
+  display:flex;align-items:center;gap:10px;padding:11px 20px;color:var(--muted);
+  font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;
+  border:none;background:transparent;width:100%;text-align:left;margin:1px 0;
+}
+.sb-item:hover{background:rgba(245,166,35,0.07);color:var(--text);}
+.sb-item.active{background:rgba(245,166,35,0.12);color:var(--gold);}
+.sb-bottom{margin-top:auto;padding:16px;}
+.disc-btn{
+  width:100%;padding:10px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.2);
+  color:var(--red);border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;
+  font-family:'Syne',sans-serif;transition:all 0.2s;
+}
+.disc-btn:hover{background:rgba(255,77,109,0.2);}
+
+/* MAIN */
+.main{margin-left:250px;flex:1;}
+.page{display:none;padding:36px 40px;max-width:960px;}
+.page.active{display:block;}
+.page-title{font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+.page-sub{color:var(--muted);font-size:0.9rem;margin-bottom:32px;}
+
+/* CARDS */
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:12px;}
+.card-head{padding:18px 22px;border-bottom:1px solid var(--border);font-weight:700;font-size:0.95rem;display:flex;align-items:center;justify-content:space-between;}
+.card-body{padding:22px;}
+
+/* STAT GRID */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.stat-num{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--gold);line-height:1;}
+.stat-lbl{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:6px;}
+
+/* PROGRESS BAR */
+.bar-bg{background:rgba(255,255,255,0.06);border-radius:100px;height:7px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.7s ease;}
+.bar-fill.green{background:linear-gradient(90deg,var(--green),#00c87a);}
+
+/* MODULE LIST */
+.mod-list{display:flex;flex-direction:column;gap:10px;}
+.mod-row{
+  background:var(--dark3);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all 0.2s;
+}
+.mod-row:hover:not(.locked){border-color:rgba(245,166,35,0.3);transform:translateX(3px);}
+.mod-row.locked{opacity:0.45;cursor:not-allowed;}
+.mod-row.done{border-color:rgba(0,229,160,0.2);}
+.mod-icon{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Space Mono',monospace;font-size:0.78rem;
+  font-weight:700;background:rgba(245,166,35,0.1);color:var(--gold);flex-shrink:0;
+}
+.mod-icon.done{background:rgba(0,229,160,0.1);color:var(--green);}
+.mod-info{flex:1;}
+.mod-title{font-weight:700;font-size:0.9rem;margin-bottom:2px;}
+.mod-desc{color:var(--muted);font-size:0.76rem;}
+.mod-tag{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:100px;white-space:nowrap;}
+.mod-tag.pending{background:rgba(245,166,35,0.1);color:var(--gold);}
+.mod-tag.done{background:rgba(0,229,160,0.1);color:var(--green);}
+.mod-tag.locked{background:rgba(255,255,255,0.05);color:var(--muted);}
+
+/* MODULE CONTENT */
+.back-btn{
+  background:var(--dark3);border:1px solid var(--border);color:var(--muted);
+  padding:8px 16px;border-radius:8px;font-size:0.8rem;cursor:pointer;
+  font-family:'Syne',sans-serif;transition:all 0.2s;font-weight:600;margin-bottom:20px;display:inline-block;
+}
+.back-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.15);}
+.content-box{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:30px;margin-bottom:18px;line-height:1.75;}
+.content-box h2{font-size:1.4rem;font-weight:800;margin-bottom:18px;}
+.content-box h3{font-size:1rem;font-weight:700;color:var(--gold);margin:20px 0 10px;}
+.content-box p{color:var(--muted);font-size:0.88rem;margin-bottom:12px;}
+.content-box ul{color:var(--muted);font-size:0.86rem;padding-left:18px;margin-bottom:12px;}
+.content-box li{margin-bottom:6px;}
+.content-box code{background:rgba(245,166,35,0.1);color:var(--gold);padding:2px 7px;border-radius:4px;font-family:'Space Mono',monospace;font-size:0.78rem;}
+.action-btn{
+  width:100%;padding:15px;border:none;border-radius:10px;font-size:0.95rem;
+  font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.action-btn.gold{background:var(--gold);color:#0A0A0F;}
+.action-btn.gold:hover{background:var(--gold-light);transform:translateY(-2px);}
+.action-btn.green{background:var(--green);color:#0A0A0F;}
+.action-btn.green:hover{opacity:0.9;transform:translateY(-2px);}
+.action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important;}
+
+/* QUIZ */
+.quiz-wrap{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:26px;margin-top:16px;}
+.quiz-q{font-weight:700;font-size:0.95rem;margin-bottom:14px;}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+.quiz-opt{
+  background:var(--dark3);border:1px solid var(--border);border-radius:8px;
+  padding:13px 16px;cursor:pointer;transition:all 0.2s;text-align:left;
+  font-family:'Syne',sans-serif;color:var(--text);font-size:0.87rem;font-weight:600;
+}
+.quiz-opt:hover{border-color:rgba(245,166,35,0.35);background:rgba(245,166,35,0.04);}
+.quiz-opt.sel{border-color:var(--gold);background:rgba(245,166,35,0.1);color:var(--gold);}
+.quiz-footer{display:flex;justify-content:space-between;align-items:center;}
+.quiz-counter{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);}
+.quiz-result{text-align:center;padding:16px 0;}
+.quiz-score{font-family:'Space Mono',monospace;font-size:3rem;font-weight:700;}
+
+/* CERT */
+.cert-card{
+  background:linear-gradient(135deg,var(--dark2),var(--dark3));
+  border:2px solid var(--gold);border-radius:16px;padding:48px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.cert-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(245,166,35,0.06) 0%,transparent 70%);}
+.cert-label{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.cert-name{font-size:2rem;font-weight:800;color:var(--gold);margin-bottom:8px;}
+.cert-course{font-size:1rem;margin-bottom:20px;}
+.cert-hash{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);}
+
+/* ADMIN */
+.admin-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.admin-table th{text-align:left;padding:11px 14px;color:var(--muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);}
+.admin-table td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.admin-table tr:last-child td{border-bottom:none;}
+.admin-table tr:hover td{background:rgba(255,255,255,0.015);}
+.pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:0.68rem;font-weight:700;}
+.pill.green{background:rgba(0,229,160,0.1);color:var(--green);}
+.pill.gold{background:rgba(245,166,35,0.1);color:var(--gold);}
+
+/* PROFILE */
+.input-group{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.input-label{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.input-field{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-size:0.88rem;font-family:'Syne',sans-serif;outline:none;width:100%;transition:border-color 0.2s;}
+.input-field:focus{border-color:var(--gold);}
+.input-field:disabled{opacity:0.5;}
+
+/* WALLET MODAL */
+.wallet-opt {
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  background:#1A1A26;border:1px solid rgba(245,166,35,0.1);border-radius:10px;
+  cursor:pointer;transition:all 0.2s;width:100%;text-align:left;
+  font-family:'Syne',sans-serif;color:#E8E8F0;
+}
+.wallet-opt:hover { border-color:rgba(245,166,35,0.4);background:rgba(245,166,35,0.06); }
+.wallet-opt img { width:36px;height:36px;border-radius:8px; }
+.wallet-opt-info { flex:1; }
+.wallet-opt-name { font-weight:700;font-size:0.9rem; }
+.wallet-opt-desc { font-size:0.72rem;color:#7A7A9A;margin-top:2px; }
+.wallet-opt-badge { font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(0,229,160,0.1);color:#00E5A0; }
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;padding:12px 18px;border-radius:10px;font-size:0.85rem;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:#0d2e1f;border:1px solid rgba(0,229,160,0.3);color:var(--green);}
+.toast.error{background:#2e0d15;border:1px solid rgba(255,77,109,0.3);color:var(--red);}
+.toast.info{background:#1c1a0d;border:1px solid rgba(245,166,35,0.3);color:var(--gold);}
+
+/* SPINNER */
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(0,0,0,0.2);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .page{padding:20px;}
+  .stats{grid-template-columns:1fr 1fr;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+</head>
+<body>
+
+<!-- CONNECT SCREEN -->
+<div id="connectScreen">
+  <div class="connect-card">
+    <span class="logo">FANOS<span>COIN</span></span>
+    <h1>Course Portal</h1>
+    <p class="sub">Connect your MetaMask wallet to access the BSC Development Masterclass, track your progress and earn your certificate.</p>
+    <button id="connectBtn">Connect Wallet</button>
+    <div id="connectError"></div>
+    <!-- WALLET MODAL -->
+    <div id="walletModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:#12121A;border:1px solid rgba(245,166,35,0.2);border-radius:16px;padding:28px;width:100%;max-width:360px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-weight:800;font-size:1rem;">Choose Wallet</div>
+          <button onclick="closeWalletModal()" style="background:none;border:none;color:#7A7A9A;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+        <div id="walletList" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div style="margin-top:16px;font-size:0.72rem;color:#7A7A9A;text-align:center;">
+          WalletConnect supports 300+ mobile wallets
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-icon">📚</div><div class="feat-title">6 Modules</div><div class="feat-desc">Full BSC dev course</div></div>
+      <div class="feat"><div class="feat-icon">🎯</div><div class="feat-title">Quizzes</div><div class="feat-desc">Test after each module</div></div>
+      <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Progress Tracking</div><div class="feat-desc">Saved to Supabase</div></div>
+      <div class="feat"><div class="feat-icon">🏆</div><div class="feat-title">Certificate</div><div class="feat-desc">On completion</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal">
+  <div class="layout">
+    <div class="sidebar">
+      <a href="fanoscoin.html" class="sb-logo">FANOS<span>COIN</span></a>
+      <div class="sb-wallet">
+        <div class="sb-wallet-label">Connected Wallet</div>
+        <div class="sb-wallet-addr" id="sbAddr">—</div>
+      </div>
+      <div class="sb-section">Learning</div>
+      <button class="sb-item active" id="nb-dashboard" onclick="nav('dashboard')">🏠 &nbsp;Dashboard</button>
+      <button class="sb-item" id="nb-course"    onclick="nav('course')">📚 &nbsp;My Course</button>
+      <button class="sb-item" id="nb-cert"      onclick="nav('cert')">🏆 &nbsp;Certificate</button>
+      <button class="sb-item" id="nb-bingo" onclick="nav('bingo')">🎮 &nbsp;Bingo Game</button>
+      <div class="sb-section">Account</div>
+      <button class="sb-item" id="nb-profile"   onclick="nav('profile')">👤 &nbsp;Profile</button>
+      <button class="sb-item" id="nb-admin"     onclick="nav('admin')" style="display:none;">⚙️ &nbsp;Admin</button>
+      <div class="sb-bottom"><button class="disc-btn" onclick="disconnect()">Disconnect</button></div>
+    </div>
+
+    <div class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="pg-dashboard">
+        <div class="page-title" id="dashTitle">Welcome 👋</div>
+        <div class="page-sub">Your learning overview</div>
+        <div class="stats">
+          <div class="stat"><div class="stat-num" id="sMods">0/6</div><div class="stat-lbl">Modules Done</div></div>
+          <div class="stat"><div class="stat-num" id="sPct">0%</div><div class="stat-lbl">Progress</div></div>
+          <div class="stat"><div class="stat-num" id="sQuiz">0</div><div class="stat-lbl">Quizzes Passed</div></div>
+          <div class="stat"><div class="stat-num" id="sBal">—</div><div class="stat-lbl">$FANOS Balance</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+          <div class="card">
+            <div class="card-head">Course Progress</div>
+            <div class="card-body">
+              <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:8px;">
+                <span>BSC Development Masterclass</span>
+                <span style="color:var(--gold);font-family:'Space Mono',monospace;" id="dashPct">0%</span>
+              </div>
+              <div class="bar-bg"><div class="bar-fill" id="dashBar" style="width:0%"></div></div>
+              <button class="action-btn gold" style="margin-top:16px;" onclick="nav('course')">Continue Learning →</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">Recent Activity</div>
+            <div class="card-body" id="recentAct"><div style="color:var(--muted);font-size:0.85rem;">Start your first module to see activity.</div></div>
+          </div>
+        </div>
+
+        <!-- Quick bingo access -->
+        <div class="card" style="margin-top:18px;background:linear-gradient(135deg,var(--dark2),var(--dark3));border-color:rgba(245,166,35,0.2);">
+          <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+            <div>
+              <div style="font-weight:800;font-size:1rem;margin-bottom:4px;">🎮 Fanos Bingo — Live Now</div>
+              <div style="color:var(--muted);font-size:0.82rem;">Play with your connected wallet and earn $FANOS rewards</div>
+            </div>
+            <button class="action-btn gold" style="width:auto;padding:12px 24px;" onclick="nav('bingo')">Play Now →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COURSE -->
+      <div class="page" id="pg-course">
+        <div id="courseList">
+          <div class="page-title">BSC Development Masterclass</div>
+          <div class="page-sub">6 modules · Complete in order · Quiz after each module</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+            <div style="flex:1;" class="bar-bg"><div class="bar-fill" id="courseBar" style="width:0%"></div></div>
+            <span style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--gold);" id="coursePct">0%</span>
+          </div>
+          <div class="mod-list" id="modList"></div>
+        </div>
+        <div id="modView" style="display:none;">
+          <button class="back-btn" onclick="showList()">← Back to Modules</button>
+          <div class="content-box" id="modContent"></div>
+          <button class="action-btn green" id="doneBtn" onclick="markDone()" style="margin-bottom:16px;">✓ Mark Complete & Take Quiz</button>
+          <div class="quiz-wrap" id="quizWrap" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- BINGO -->
+      <div class="page" id="pg-bingo">
+        <div class="page-title">🎮 Fanos Bingo</div>
+        <div class="page-sub" id="bingoSub">Connect your wallet to play and earn $FANOS</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;">
+          <div class="card" style="text-align:center;padding:18px 10px;">
+            <div style="font-size:1.6rem;margin-bottom:6px;">🔗</div>
+            <div style="font-weight:700;font-size:0.82rem;">On-Chain Payouts</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Smart contract auto-pays winners</div>
+          </div>
+          <div class="card" style="text-align:center;padding:18px 10px;">
+            <div style="font-size:1.6rem;margin-bottom:6px;">🪙</div>
+            <div style="font-weight:700;font-size:0.82rem;">$FANOS Rewards</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Win real tokens instantly</div>
+          </div>
+          <div class="card" style="text-align:center;padding:18px 10px;">
+            <div style="font-size:1.6rem;margin-bottom:6px;">👥</div>
+            <div style="font-weight:700;font-size:0.82rem;">Multiplayer</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Play live with the community</div>
+          </div>
+        </div>
+        <div style="background:var(--dark2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--dark3);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#FF5F57;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#FFBD2E;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#28C840;"></div>
+              <span style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);margin-left:8px;" id="bingoUrl">fanosbnb.site</span>
+            </div>
+            <a id="bingoOpenBtn" href="https://fanosbnb.site/" target="_blank" style="font-size:0.72rem;color:var(--gold);text-decoration:none;font-weight:700;">Open Full Screen ↗</a>
+          </div>
+          <iframe id="bingoFrame" src="https://fanosbnb.site/" style="width:100%;height:700px;border:none;display:block;" allow="clipboard-write" loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <!-- CERTIFICATE -->
+      <div class="page" id="pg-cert">
+        <div class="page-title">Certificate</div>
+        <div class="page-sub">Complete all modules to earn your certificate</div>
+        <div id="certArea"></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="pg-profile">
+        <div class="page-title">My Profile</div>
+        <div class="page-sub">Update your account details</div>
+        <div class="card" style="max-width:520px;">
+          <div class="card-head">Settings</div>
+          <div class="card-body">
+            <div class="input-group"><label class="input-label">Display Name</label><input class="input-field" id="pName" type="text" placeholder="Your name"></div>
+            <div class="input-group"><label class="input-label">Email (optional)</label><input class="input-field" id="pEmail" type="email" placeholder="your@email.com"></div>
+            <div class="input-group"><label class="input-label">Wallet Address</label><input class="input-field" id="pWallet" disabled></div>
+            <div class="input-group"><label class="input-label">$FANOS Balance</label><input class="input-field" id="pBal" disabled></div>
+            <button class="action-btn gold" style="margin-top:4px;" onclick="saveProfile()">Save Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="page" id="pg-admin">
+        <div class="page-title">⚙️ Admin Panel</div>
+        <div class="page-sub">FanosCoin course management</div>
+        <div class="stats">
+          <div class="stat"><div class="stat-num" id="aUsers">—</div><div class="stat-lbl">Total Users</div></div>
+          <div class="stat"><div class="stat-num" id="aEnroll">—</div><div class="stat-lbl">Enrollments</div></div>
+          <div class="stat"><div class="stat-num" id="aCerts">—</div><div class="stat-lbl">Certificates</div></div>
+          <div class="stat"><div class="stat-num" id="aRevenue">0</div><div class="stat-lbl">Revenue $FANOS</div></div>
+        </div>
+        <div class="card" style="margin-bottom:18px;">
+          <div class="card-head">Module Completion</div>
+          <div class="card-body" id="adminMods">Loading...</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            All Students
+            <button onclick="exportCSV()" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);color:var(--gold);padding:6px 14px;border-radius:6px;font-size:0.74rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Export CSV</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead><tr><th>Wallet</th><th>Name</th><th>Modules</th><th>Quizzes</th><th>Joined</th></tr></thead>
+              <tbody id="adminTbl"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:24px;">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG ─── Replace these with your values ───
+const CFG = {
+  supabaseUrl:  'YOUR_SUPABASE_PROJECT_URL',
+  supabaseKey:  'YOUR_SUPABASE_ANON_KEY',
+  courseId:     'a1b2c3d4-0000-0000-0000-000000000001',
+  tokenAddr:    '0x6B79Be9880c7E363a4AE2489eA7edb7d07617c6F',
+  adminWallets: ['your_wallet_address_lowercase'],
+  bscChainId:   '0x38'
+};
+
+// ─── STATE ───
+let S = { wallet:null, user:null, modules:[], progress:{}, quizDone:{}, curMod:null, curQ:0, answers:[], selAns:null };
+
+// ─── SUPABASE (plain fetch, no library needed) ───
+const sbReady = () => !CFG.supabaseUrl.includes('YOUR_');
+
+async function sbFetch(path, method='GET', body=null, prefer='return=representation') {
+  if (!sbReady()) return { data:null, error:'not configured' };
+  try {
+    const r = await fetch(CFG.supabaseUrl + '/rest/v1/' + path, {
+      method,
+      headers: {
+        'apikey': CFG.supabaseKey,
+        'Authorization': 'Bearer ' + CFG.supabaseKey,
+        'Content-Type': 'application/json',
+        'Prefer': prefer
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = r.status === 204 ? null : await r.json();
+    return r.ok ? { data, error:null } : { data:null, error: data };
+  } catch(e) { return { data:null, error:e.message }; }
+}
+
+const dbGet    = (t, q)    => sbFetch(t + '?' + q);
+const dbPost   = (t, b)    => sbFetch(t, 'POST', b);
+const dbPatch  = (t, q, b) => sbFetch(t+'?'+q, 'PATCH', b, 'return=minimal');
+const dbUpsert = (t, b, c) => sbFetch(t+'?on_conflict='+c, 'POST', b, 'resolution=merge-duplicates,return=representation');
+
+// ─── MODULE CONTENT ───
+const MODS = [
+  { title:'Blockchain Fundamentals', desc:'How BSC works, wallets, gas and the ecosystem',
+    content:`<h2>Blockchain Fundamentals</h2>
+      <h3>What is BNB Smart Chain?</h3>
+      <p>BNB Smart Chain (BSC) is an EVM-compatible blockchain for fast, cheap smart contract apps. Blocks process every ~3 seconds with very low gas fees.</p>
+      <h3>Key Concepts</h3>
+      <ul><li><strong>Wallets</strong> — Your identity on-chain. MetaMask is the most popular EVM wallet.</li>
+      <li><strong>Gas Fees</strong> — Small BNB fees paid to validators per transaction.</li>
+      <li><strong>Consensus</strong> — BSC uses Proof of Staked Authority (PoSA) with 21 validators.</li>
+      <li><strong>BSCScan</strong> — Block explorer for BSC. View any transaction, contract, or wallet.</li></ul>
+      <h3>Add BSC to MetaMask</h3>
+      <ul><li>Network Name: <code>BNB Smart Chain</code></li>
+      <li>RPC URL: <code>https://bsc-dataseed.binance.org/</code></li>
+      <li>Chain ID: <code>56</code></li><li>Symbol: <code>BNB</code></li></ul>`,
+    quiz:[
+      {q:'What consensus does BSC use?',opts:['Proof of Work','Proof of Stake','Proof of Staked Authority','Delegated PoS'],ans:2},
+      {q:'What is the BSC Mainnet Chain ID?',opts:['1','97','56','137'],ans:2},
+      {q:'What are gas fees paid in on BSC?',opts:['USDT','ETH','BNB','FANOS'],ans:2},
+      {q:'What tool lets you explore BSC transactions?',opts:['Etherscan','BSCScan','Tenderly','Hardhat'],ans:1}
+    ]
+  },
+  { title:'Solidity Smart Contracts', desc:'Write, compile and deploy your first contract',
+    content:`<h2>Solidity Smart Contracts</h2>
+      <h3>What is Solidity?</h3>
+      <p>Solidity is the programming language for EVM smart contracts. Statically typed, supports inheritance, compiles to bytecode that runs on the EVM.</p>
+      <h3>Core Building Blocks</h3>
+      <ul><li><strong>State Variables</strong> — Stored permanently on-chain: <code>uint256 public count;</code></li>
+      <li><strong>Functions</strong> — <code>public</code>, <code>private</code>, <code>view</code>, <code>pure</code></li>
+      <li><strong>Events</strong> — Emit data for frontends to listen to</li>
+      <li><strong>Mappings</strong> — Key-value store: <code>mapping(address => uint256)</code></li>
+      <li><strong>Modifiers</strong> — Reusable guards: <code>modifier onlyOwner()</code></li></ul>
+      <h3>Deploy with Remix</h3>
+      <p>Go to <code>remix.ethereum.org</code> — write, compile and deploy with no local setup needed.</p>`,
+    quiz:[
+      {q:'What language are BSC contracts written in?',opts:['JavaScript','Python','Solidity','Rust'],ans:2},
+      {q:'What does a view function do?',opts:['Modifies state','Reads without modifying','Deletes data','Emits events'],ans:1},
+      {q:'What is a mapping in Solidity?',opts:['An array','A key-value structure','A loop','A GPS'],ans:1},
+      {q:'Which IDE lets you deploy without local setup?',opts:['VSCode','Hardhat','Remix IDE','Truffle'],ans:2}
+    ]
+  },
+  { title:'BEP-20 Token Creation', desc:'Create and deploy your own token on BSC',
+    content:`<h2>BEP-20 Token Creation</h2>
+      <h3>What is BEP-20?</h3>
+      <p>BEP-20 is BSC's token standard, equivalent to ERC-20 on Ethereum. It defines a common interface all fungible tokens must follow.</p>
+      <h3>Required Functions</h3>
+      <ul><li><code>totalSupply()</code> — Returns total token supply</li>
+      <li><code>balanceOf(address)</code> — Returns balance of an address</li>
+      <li><code>transfer(to, amount)</code> — Send tokens</li>
+      <li><code>approve(spender, amount)</code> — Allow a contract to spend your tokens</li>
+      <li><code>transferFrom(from, to, amount)</code> — Transfer on behalf of another</li></ul>
+      <h3>Using OpenZeppelin</h3>
+      <p>Import <code>ERC20.sol</code>, extend your contract, call <code>_mint(msg.sender, supply)</code> in the constructor. Done.</p>`,
+    quiz:[
+      {q:'What is BEP-20?',opts:['A blockchain','A token standard on BSC','A wallet type','A DEX'],ans:1},
+      {q:'How many decimals do most BEP-20 tokens have?',opts:['6','8','18','2'],ans:2},
+      {q:'Which function allows a contract to spend your tokens?',opts:['transfer','mint','approve','burn'],ans:2},
+      {q:'Which library provides audited token templates?',opts:['Chainlink','OpenZeppelin','wagmi','Hardhat'],ans:1}
+    ]
+  },
+  { title:'Smart Contract Security', desc:'Protect your contracts from common exploits',
+    content:`<h2>Smart Contract Security</h2>
+      <h3>Why it Matters</h3>
+      <p>Smart contracts are immutable once deployed. A single bug can permanently drain funds. Billions have been lost to preventable exploits.</p>
+      <h3>Common Vulnerabilities</h3>
+      <ul><li><strong>Reentrancy</strong> — Attacker re-enters before state updates. Fix: <code>nonReentrant</code></li>
+      <li><strong>Access Control</strong> — Use <code>Ownable</code> from OpenZeppelin</li>
+      <li><strong>Signature Replay</strong> — Always include unique nonces in signed messages</li>
+      <li><strong>Integer Overflow</strong> — Solidity 0.8+ handles this automatically</li></ul>
+      <h3>Best Practices</h3>
+      <ul><li>Follow <strong>Checks-Effects-Interactions</strong> pattern</li>
+      <li>Use <code>SafeERC20</code> for token transfers</li>
+      <li>Test on testnet before mainnet</li>
+      <li>Get a professional audit for high-value contracts</li></ul>`,
+    quiz:[
+      {q:'What is a reentrancy attack?',opts:['Spamming txns','Re-entering before state updates','Stealing keys','Front-running'],ans:1},
+      {q:'What pattern prevents reentrancy?',opts:['Checks-Effects-Interactions','Loops-Events-Modifiers','Approve-Transfer-Burn','None'],ans:0},
+      {q:'Which utility helps safe token transfers?',opts:['SafeMath','SafeERC20','SecureToken','SafeTransfer'],ans:1},
+      {q:'Why use nonces in signed messages?',opts:['Save gas','Prevent replay attacks','Speed txns','Required by BSC'],ans:1}
+    ]
+  },
+  { title:'DApp Frontend with Web3', desc:'Connect your contract to a web frontend',
+    content:`<h2>DApp Frontend with Web3</h2>
+      <h3>What is a DApp?</h3>
+      <p>A Decentralized Application combines a smart contract backend with a web frontend. The bridge is a Web3 library like ethers.js or wagmi.</p>
+      <h3>Key Libraries</h3>
+      <ul><li><strong>ethers.js</strong> — Lightweight, most popular EVM interaction library</li>
+      <li><strong>wagmi</strong> — React hooks for wallet connection and contract reads</li>
+      <li><strong>viem</strong> — TypeScript-first, ultra-fast alternative</li>
+      <li><strong>Reown AppKit</strong> — Full wallet UI supporting 300+ wallets</li></ul>
+      <h3>Basic Flow</h3>
+      <ul><li>Detect MetaMask: <code>window.ethereum</code></li>
+      <li>Request accounts: <code>eth_requestAccounts</code></li>
+      <li>Create contract instance with address, ABI and signer</li>
+      <li>Call functions and handle responses</li></ul>`,
+    quiz:[
+      {q:'What is window.ethereum?',opts:['A BSC API','Injected by MetaMask','An ETH node','A smart contract'],ans:1},
+      {q:'Which library gives React hooks for Web3?',opts:['ethers.js','viem','wagmi','web3.js'],ans:2},
+      {q:'Do view functions cost gas?',opts:['Yes always','No they are free','Only mainnet','Only large data'],ans:1},
+      {q:'What do you need to write to a contract?',opts:['Just address','Address + ABI','Address + ABI + signer','Only signer'],ans:2}
+    ]
+  },
+  { title:'Launch & Verify on BSCScan', desc:'Go live on mainnet and verify your contract',
+    content:`<h2>Launch & Verify on BSCScan</h2>
+      <h3>Deploying to Mainnet</h3>
+      <p>Switch MetaMask to BSC Mainnet, ensure you have real BNB for gas, and deploy exactly as you did on testnet.</p>
+      <h3>Verifying on BSCScan</h3>
+      <ul><li>Go to your contract on bscscan.com</li>
+      <li>Click <strong>Contract → Verify and Publish</strong></li>
+      <li>Select compiler version (0.8.20) and MIT license</li>
+      <li>Paste flattened source from Remix (right-click → Flatten)</li></ul>
+      <h3>Adding Liquidity on PancakeSwap</h3>
+      <ul><li>Go to pancakeswap.finance → Liquidity → Add</li>
+      <li>Pair your token with BNB or USDT</li>
+      <li>The ratio you provide sets the initial price</li>
+      <li>Consider locking liquidity with DxLock for trust</li></ul>`,
+    quiz:[
+      {q:'Why verify your contract on BSCScan?',opts:['Increase price','Make code transparent','Required by law','Reduce gas'],ans:1},
+      {q:'What does adding liquidity set?',opts:['Token name','Initial price','Gas fees','Holder count'],ans:1},
+      {q:'Which DEX is most popular on BSC?',opts:['Uniswap','SushiSwap','PancakeSwap','Curve'],ans:2},
+      {q:'Why lock liquidity?',opts:['Required by BSC','Build trust with investors','Auto-increases price','Reduces gas'],ans:1}
+    ]
+  }
+];
+
+// ─── WALLET CONNECTION ───
+
+// Wallet icons (inline SVG / data URIs)
+const WALLET_ICONS = {
+  metamask: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
+  trust: 'https://trustwallet.com/assets/images/media/assets/TWT.png',
+  coinbase: 'https://images.ctfassets.net/q5ulk4bp65r7/3TBS4oVkD1ghowTqyceHIv/2195f3070fa9f038b6a0fcce6700f3eb/coinbase-icon-2.png',
+  brave: 'https://brave.com/static-assets/images/brave-logo-sans-text.svg',
+  walletconnect: 'https://avatars.githubusercontent.com/u/37784886'
+};
+
+function detectWallets() {
+  const wallets = [];
+  const eth = window.ethereum;
+
+  if (!eth) return wallets;
+
+  // Multiple providers (e.g. MetaMask + Coinbase both installed)
+  const providers = eth.providers || [eth];
+
+  providers.forEach(function(p) {
+    if (p.isMetaMask && !p.isBraveWallet) {
+      wallets.push({ id: 'metamask', name: 'MetaMask', desc: 'Browser extension', provider: p, icon: WALLET_ICONS.metamask });
+    }
+    if (p.isCoinbaseWallet || p.isCoinbaseBrowser) {
+      wallets.push({ id: 'coinbase', name: 'Coinbase Wallet', desc: 'Browser extension', provider: p, icon: WALLET_ICONS.coinbase });
+    }
+    if (p.isBraveWallet) {
+      wallets.push({ id: 'brave', name: 'Brave Wallet', desc: 'Built into Brave browser', provider: p, icon: WALLET_ICONS.brave });
+    }
+    if (p.isTrust || p.isTrustWallet) {
+      wallets.push({ id: 'trust', name: 'Trust Wallet', desc: 'Browser extension', provider: p, icon: WALLET_ICONS.trust });
+    }
+  });
+
+  // If no specific wallet detected but ethereum exists (generic injected)
+  if (wallets.length === 0 && eth) {
+    wallets.push({ id: 'injected', name: 'Browser Wallet', desc: 'Detected wallet', provider: eth, icon: WALLET_ICONS.metamask });
+  }
+
+  return wallets;
+}
+
+function openWalletModal() {
+  var modal = document.getElementById('walletModal');
+  var list = document.getElementById('walletList');
+  modal.style.display = 'flex';
+  list.innerHTML = '';
+
+  var detected = detectWallets();
+
+  detected.forEach(function(w) {
+    var btn = document.createElement('button');
+    btn.className = 'wallet-opt';
+    btn.innerHTML = '<img src="' + w.icon + '" style="width:36px;height:36px;border-radius:8px;" />' +
+      '<div class="wallet-opt-info"><div class="wallet-opt-name">' + w.name + '</div>' +
+      '<div class="wallet-opt-desc">' + w.desc + '</div></div>' +
+      '<span class="wallet-opt-badge">Detected</span>';
+    btn.addEventListener('click', function() { connectWithProvider(w.id); });
+    list.appendChild(btn);
+  });
+
+  // WalletConnect button
+  var wcBtn = document.createElement('button');
+  wcBtn.className = 'wallet-opt';
+  wcBtn.innerHTML = '<img src="https://avatars.githubusercontent.com/u/37784886" style="width:36px;height:36px;border-radius:8px;" />' +
+    '<div class="wallet-opt-info"><div class="wallet-opt-name">WalletConnect</div>' +
+    '<div class="wallet-opt-desc">Trust, Rainbow, MetaMask Mobile + 300 more</div></div>';
+  wcBtn.addEventListener('click', connectWithWalletConnect);
+  list.appendChild(wcBtn);
+
+  // If nothing detected, add MetaMask install link
+  if (detected.length === 0) {
+    var installBtn = document.createElement('a');
+    installBtn.href = 'https://metamask.io';
+    installBtn.target = '_blank';
+    installBtn.className = 'wallet-opt';
+    installBtn.style.textDecoration = 'none';
+    installBtn.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" style="width:36px;height:36px;border-radius:8px;" />' +
+      '<div class="wallet-opt-info"><div class="wallet-opt-name">MetaMask</div>' +
+      '<div class="wallet-opt-desc">Install browser extension</div></div>' +
+      '<span style="font-size:0.65rem;color:#F5A623;">↗ Install</span>';
+    list.insertBefore(installBtn, list.firstChild);
+  }
+}
+
+function closeWalletModal() {
+  document.getElementById('walletModal').style.display = 'none';
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('walletModal');
+  if (e.target === modal) closeWalletModal();
+});
+
+function connectWithProvider(walletId) {
+  closeWalletModal();
+  const detected = detectWallets();
+  const wallet = detected.find(function(w) { return w.id === walletId; }) || detected[0];
+  if (!wallet) { showToast('Wallet not found', 'error'); return; }
+  doConnect(wallet.provider);
+}
+
+function connectWithWalletConnect() {
+  closeWalletModal();
+
+  // Check if WalletConnect library loaded
+  if (typeof WalletConnectProvider === 'undefined') {
+    showToast('WalletConnect loading... try again in a moment', 'info');
+    return;
+  }
+
+  const provider = new WalletConnectProvider.default({
+    rpc: { 56: 'https://bsc-dataseed.binance.org/', 97: 'https://data-seed-prebsc-1-s1.binance.org:8545/' },
+    chainId: 56
+  });
+
+  provider.enable()
+    .then(function() {
+      doConnect(provider);
+    })
+    .catch(function(e) {
+      if (e && e.message && e.message.includes('User closed')) {
+        showToast('WalletConnect cancelled', 'info');
+      } else {
+        showToast('WalletConnect failed: ' + (e.message || 'unknown error'), 'error');
+      }
+    });
+}
+
+function connectWallet() {
+  openWalletModal();
+}
+
+function doConnect(provider) {
+  const errEl = document.getElementById('connectError');
+  const btn = document.getElementById('connectBtn');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>&nbsp; Connecting...';
+
+  provider.request({ method: 'eth_requestAccounts' })
+    .then(function(accounts) {
+      if (!accounts || !accounts.length) throw new Error('No accounts returned.');
+      S.wallet = accounts[0].toLowerCase();
+      S.provider = provider;
+
+      // Switch to BSC
+      provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] })
+        .catch(function(sw) {
+          if (sw.code === 4902) {
+            provider.request({ method: 'wallet_addEthereumChain', params: [{
+              chainId: '0x38', chainName: 'BNB Smart Chain',
+              rpcUrls: ['https://bsc-dataseed.binance.org/'],
+              nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+              blockExplorerUrls: ['https://bscscan.com']
+            }]}).catch(function(){});
+          }
+        });
+
+      initDB()
+        .catch(function(e) { console.warn('DB skipped:', e.message); })
+        .finally(function() {
+          if (!S.modules.length) {
+            S.modules = MODS.map(function(m, i) {
+              return { id: 'mod-' + i, title: m.title, description: m.desc, order_index: i };
+            });
+          }
+          openPortal();
+        });
+    })
+    .catch(function(e) {
+      var msg = e.code === 4001
+        ? '❌ Connection rejected — please approve in your wallet.'
+        : '❌ ' + (e.message || 'Connection failed.');
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = 'Connect Wallet';
+    });
+}
+
+// ─── DB INIT ───
+async function initDB() {
+  if (!sbReady()) throw new Error('Supabase not configured');
+
+  await dbUpsert('users', { wallet_address: S.wallet, last_seen: new Date().toISOString() }, 'wallet_address');
+
+  const { data: users } = await dbGet('users', 'wallet_address=eq.'+S.wallet+'&limit=1');
+  S.user = users?.[0] || null;
+
+  if (S.user) {
+    await dbUpsert('enrollments', { user_id:S.user.id, course_id:CFG.courseId, payment_status:'free' }, 'user_id,course_id');
+
+    const { data: mods } = await dbGet('modules', 'course_id=eq.'+CFG.courseId+'&order=order_index.asc');
+    S.modules = mods || [];
+
+    const { data: prog } = await dbGet('progress', 'user_id=eq.'+S.user.id);
+    S.progress = {};
+    (prog||[]).forEach(p => S.progress[p.module_id] = p);
+
+    const { data: quiz } = await dbGet('quiz_results', 'user_id=eq.'+S.user.id+'&passed=eq.true');
+    S.quizDone = {};
+    (quiz||[]).forEach(q => S.quizDone[q.module_id] = q);
+  }
+}
+
+// ─── PORTAL ───
+function openPortal() {
+  document.getElementById('connectScreen').style.display = 'none';
+  document.getElementById('portal').style.display = 'block';
+  document.getElementById('sbAddr').textContent = S.wallet.slice(0,6)+'...'+S.wallet.slice(-4);
+  if (CFG.adminWallets.map(w=>w.toLowerCase()).includes(S.wallet)) {
+    document.getElementById('nb-admin').style.display = 'block';
+  }
+  nav('dashboard');
+}
+
+function disconnect() {
+  S = { wallet:null, user:null, modules:[], progress:{}, quizDone:{}, curMod:null, curQ:0, answers:[], selAns:null };
+  document.getElementById('portal').style.display = 'none';
+  document.getElementById('connectScreen').style.display = 'flex';
+  document.getElementById('connectBtn').disabled = false;
+  document.getElementById('connectBtn').innerHTML = '🦊 Connect MetaMask';
+}
+
+// ─── NAV ───
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('pg-'+page)?.classList.add('active');
+  document.getElementById('nb-'+page)?.classList.add('active');
+  ({dashboard:loadDash, course:loadCourse, cert:loadCert, profile:loadProfile, admin:loadAdmin, bingo:loadBingo})[page]?.();
+}
+
+// ─── DASHBOARD ───
+function loadDash() {
+  const name = S.user?.display_name || S.wallet?.slice(0,6)+'...';
+  document.getElementById('dashTitle').textContent = 'Welcome back, '+name+' 👋';
+  const done = Object.values(S.progress).filter(p=>p.completed).length;
+  const total = S.modules.length || 6;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('sMods').textContent = done+'/'+total;
+  document.getElementById('sPct').textContent = pct+'%';
+  document.getElementById('sQuiz').textContent = Object.keys(S.quizDone).length;
+  document.getElementById('sBal').textContent = S.user?.fanos_balance ? parseFloat(S.user.fanos_balance).toLocaleString() : '—';
+  document.getElementById('dashPct').textContent = pct+'%';
+  document.getElementById('dashBar').style.width = pct+'%';
+  const recent = Object.values(S.progress).filter(p=>p.completed).sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at)).slice(0,3);
+  const ra = document.getElementById('recentAct');
+  ra.innerHTML = !recent.length ? '<div style="color:var(--muted);font-size:0.85rem;">No activity yet. Start your first module!</div>'
+    : recent.map(p => { const m=S.modules.find(m=>m.id===p.module_id);
+        return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--green);">✓</span>
+          <div><div style="font-size:0.85rem;font-weight:600;">${m?.title||'Module'}</div>
+          <div style="font-size:0.72rem;color:var(--muted);">${new Date(p.completed_at).toLocaleDateString()}</div></div></div>`;
+      }).join('');
+}
+
+// ─── COURSE ───
+function loadCourse() {
+  showList();
+  const done = Object.values(S.progress).filter(p=>p.completed).length;
+  const total = S.modules.length||6;
+  const pct = total?Math.round(done/total*100):0;
+  document.getElementById('courseBar').style.width = pct+'%';
+  document.getElementById('coursePct').textContent = pct+'%';
+  document.getElementById('modList').innerHTML = S.modules.map((m,i) => {
+    const isDone = S.progress[m.id]?.completed;
+    const prevDone = i===0 || S.progress[S.modules[i-1]?.id]?.completed;
+    const locked = !prevDone && !isDone;
+    return `<div class="mod-row ${isDone?'done':''} ${locked?'locked':''}" onclick="${locked?'':('openMod('+i+')')}">
+      <div class="mod-icon ${isDone?'done':''}">${isDone?'✓':(i+1)}</div>
+      <div class="mod-info"><div class="mod-title">${m.title}</div><div class="mod-desc">${m.description||''}</div></div>
+      <span class="mod-tag ${isDone?'done':locked?'locked':'pending'}">${isDone?'✓ Complete':locked?'🔒 Locked':'→ Start'}</span>
+    </div>`;
+  }).join('');
+}
+
+function showList() {
+  document.getElementById('courseList').style.display = 'block';
+  document.getElementById('modView').style.display = 'none';
+}
+
+function openMod(idx) {
+  S.curMod = idx;
+  const m = S.modules[idx];
+  document.getElementById('courseList').style.display = 'none';
+  document.getElementById('modView').style.display = 'block';
+  document.getElementById('modContent').innerHTML = MODS[idx]?.content || `<h2>${m.title}</h2><p style="color:var(--muted)">Content coming soon.</p>`;
+  const isDone = S.progress[m.id]?.completed;
+  const db = document.getElementById('doneBtn');
+  db.style.display = isDone?'none':'flex';
+  db.disabled = false;
+  db.textContent = '✓ Mark Complete & Take Quiz';
+  const qw = document.getElementById('quizWrap');
+  if (isDone && S.quizDone[m.id]) {
+    qw.style.display = 'block';
+    qw.innerHTML = `<div class="quiz-result"><div class="quiz-score" style="color:var(--green);">✓</div><div style="font-weight:700;margin:10px 0;color:var(--green);">Quiz Completed</div><div style="color:var(--muted);font-size:0.85rem;">You already passed this quiz.</div></div>`;
+  } else { qw.style.display = 'none'; }
+  if (S.user && sbReady()) dbUpsert('progress',{user_id:S.user.id,module_id:m.id,last_accessed:new Date().toISOString()},'user_id,module_id').catch(()=>{});
+}
+
+async function markDone() {
+  const idx = S.curMod;
+  const m = S.modules[idx];
+  const btn = document.getElementById('doneBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>&nbsp; Saving...';
+  if (S.user && sbReady()) {
+    await dbUpsert('progress',{user_id:S.user.id,module_id:m.id,completed:true,completed_at:new Date().toISOString(),last_accessed:new Date().toISOString()},'user_id,module_id');
+  }
+  S.progress[m.id] = { completed:true, completed_at:new Date().toISOString(), module_id:m.id };
+  btn.style.display = 'none';
+  showToast('Module complete! Take the quiz 🎯','success');
+  startQuiz(idx);
+}
+
+// ─── QUIZ ───
+function startQuiz(idx) {
+  S.curQ=0; S.answers=[]; S.selAns=null;
+  document.getElementById('quizWrap').style.display = 'block';
+  renderQ(idx);
+}
+
+function renderQ(idx) {
+  const qs = MODS[idx].quiz;
+  const q = qs[S.curQ];
+  document.getElementById('quizWrap').innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:7px;">
+        <span style="color:var(--muted);">Module Quiz</span>
+        <span style="color:var(--gold);font-family:'Space Mono',monospace;">${S.curQ+1}/${qs.length}</span>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${(S.curQ/qs.length)*100}%"></div></div>
+    </div>
+    <div class="quiz-q">Q${S.curQ+1}. ${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" id="qo${i}" onclick="pickAns(${i})">${o}</button>`).join('')}</div>
+    <div class="quiz-footer">
+      <span class="quiz-counter">Select an answer</span>
+      <button class="action-btn gold" id="nextBtn" style="width:auto;padding:11px 24px;" onclick="nextQ(${idx})" disabled>${S.curQ===qs.length-1?'Finish':'Next →'}</button>
+    </div>`;
+}
+
+function pickAns(i) {
+  S.selAns = i;
+  document.querySelectorAll('.quiz-opt').forEach((b,idx) => b.classList.toggle('sel', idx===i));
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQ(idx) {
+  S.answers.push(S.selAns); S.selAns = null;
+  if (S.curQ < MODS[idx].quiz.length-1) { S.curQ++; renderQ(idx); }
+  else finishQuiz(idx);
+}
+
+async function finishQuiz(idx) {
+  const qs = MODS[idx].quiz;
+  const correct = qs.filter((q,i)=>S.answers[i]===q.ans).length;
+  const pct = Math.round(correct/qs.length*100);
+  const passed = pct >= 75;
+  const m = S.modules[idx];
+  if (S.user && sbReady()) await dbPost('quiz_results',{user_id:S.user.id,module_id:m.id,score:correct,max_score:qs.length,passed,answers:S.answers}).catch(()=>{});
+  if (passed) {
+    S.quizDone[m.id] = {passed:true};
+    if (S.modules.every(mod=>S.quizDone[mod.id])) await issueCert();
+  }
+  document.getElementById('quizWrap').innerHTML = `<div class="quiz-result">
+    <div class="quiz-score" style="color:${passed?'var(--green)':'var(--red)'};">${pct}%</div>
+    <div style="font-weight:700;font-size:1.05rem;margin:10px 0;color:${passed?'var(--green)':'var(--red)'};">${passed?'🎉 Passed!':'❌ Not quite...'}</div>
+    <div style="color:var(--muted);font-size:0.85rem;">${correct}/${qs.length} correct · ${passed?'Well done!':'Need 75% to pass.'}</div>
+    <div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      ${!passed?`<button class="action-btn gold" style="width:auto;padding:11px 22px;" onclick="startQuiz(${idx})">Retry</button>`:''}
+      ${passed?`<button class="action-btn green" style="width:auto;padding:11px 22px;" onclick="showList();loadCourse()">Continue →</button>`:''}
+    </div></div>`;
+  showToast(passed?'🎉 Quiz passed!':'📚 Try again!', passed?'success':'error');
+}
+
+// ─── BINGO ───
+function loadBingo() {
+  if (!S.wallet) return;
+  // Pass wallet address to bingo game via URL param
+  var bingoBase = 'https://fanosbnb.site/';
+  var bingoUrl = bingoBase + '?wallet=' + S.wallet;
+  var frame = document.getElementById('bingoFrame');
+  var openBtn = document.getElementById('bingoOpenBtn');
+  var urlLabel = document.getElementById('bingoUrl');
+
+  // Only reload if wallet changed
+  if (frame.dataset.wallet !== S.wallet) {
+    frame.src = bingoUrl;
+    frame.dataset.wallet = S.wallet;
+  }
+  openBtn.href = bingoUrl;
+  urlLabel.textContent = 'fanosbnb.site/?wallet=' + S.wallet.slice(0,8) + '...';
+
+  var name = S.user?.display_name || S.wallet.slice(0,6)+'...';
+  document.getElementById('bingoSub').textContent = 'Playing as ' + name + ' · ' + S.wallet.slice(0,6)+'...'+S.wallet.slice(-4);
+}
+
+// ─── CERTIFICATE ───
+async function issueCert() {
+  if (!S.user || !sbReady()) return;
+  const hash = 'FANOS-'+S.wallet.slice(2,8).toUpperCase()+'-'+Date.now();
+  await dbUpsert('certificates',{user_id:S.user.id,course_id:CFG.courseId,cert_hash:hash},'user_id,course_id').catch(()=>{});
+  showToast('🏆 Certificate issued! Congratulations!','success');
+}
+
+async function loadCert() {
+  const done = Object.values(S.progress).filter(p=>p.completed).length;
+  const total = S.modules.length||6;
+  let cert = null;
+  if (S.user && sbReady()) {
+    const { data } = await dbGet('certificates','user_id=eq.'+S.user.id+'&course_id=eq.'+CFG.courseId+'&limit=1');
+    cert = data?.[0]||null;
+  }
+  const ca = document.getElementById('certArea');
+  if (cert) {
+    const name = S.user?.display_name || S.wallet.slice(0,10)+'...';
+    ca.innerHTML = `<div class="cert-card"><div class="cert-label">Certificate of Completion</div>
+      <div class="cert-name">${name}</div><div class="cert-course">BSC Development Masterclass</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">Issued ${new Date(cert.issued_at).toLocaleDateString()}</div>
+      <div class="cert-hash">Verification: ${cert.cert_hash}</div></div>`;
+  } else {
+    ca.innerHTML = `<div class="card"><div class="card-body" style="text-align:center;padding:48px;">
+      <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:8px;">Certificate Locked</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:20px;">Complete all ${total} modules and pass their quizzes.</div>
+      <div style="max-width:260px;margin:0 auto;">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:7px;"><span>Progress</span><span style="color:var(--gold);">${done}/${total}</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${total?Math.round(done/total*100):0}%"></div></div>
+      </div></div></div>`;
+  }
+}
+
+// ─── PROFILE ───
+function loadProfile() {
+  document.getElementById('pName').value = S.user?.display_name||'';
+  document.getElementById('pEmail').value = S.user?.email||'';
+  document.getElementById('pWallet').value = S.wallet||'';
+  document.getElementById('pBal').value = S.user?.fanos_balance ? parseFloat(S.user.fanos_balance).toLocaleString()+' $FANOS' : '—';
+}
+async function saveProfile() {
+  if (!S.user||!sbReady()){showToast('Supabase not configured','error');return;}
+  const name=document.getElementById('pName').value.trim(), email=document.getElementById('pEmail').value.trim();
+  const {error}=await dbPatch('users','id=eq.'+S.user.id,{display_name:name,email});
+  if(!error){S.user.display_name=name;S.user.email=email;showToast('Profile saved!','success');}
+  else showToast('Save failed','error');
+}
+
+// ─── ADMIN ───
+async function loadAdmin() {
+  if (!CFG.adminWallets.map(w=>w.toLowerCase()).includes(S.wallet)) return;
+  if (!sbReady()){showToast('Supabase not configured','error');return;}
+  const [{data:users},{data:enrolls},{data:certs}] = await Promise.all([
+    dbGet('users','select=id'), dbGet('enrollments','select=id'), dbGet('certificates','select=id')
+  ]);
+  document.getElementById('aUsers').textContent = users?.length||0;
+  document.getElementById('aEnroll').textContent = enrolls?.length||0;
+  document.getElementById('aCerts').textContent = certs?.length||0;
+  const {data:prog} = await dbGet('progress','select=*');
+  document.getElementById('adminMods').innerHTML = S.modules.map(m => {
+    const mp=(prog||[]).filter(p=>p.module_id===m.id), done=mp.filter(p=>p.completed).length, t=mp.length, pct=t?Math.round(done/t*100):0;
+    return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:6px;">
+      <span>${m.order_index+1}. ${m.title}</span>
+      <span style="color:var(--gold);font-family:'Space Mono',monospace;">${pct}% (${done}/${t})</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+  const {data:allUsers}=await dbGet('users','order=created_at.desc');
+  const {data:quiz}=await dbGet('quiz_results','passed=eq.true');
+  const tbody=document.getElementById('adminTbl');
+  tbody.innerHTML = allUsers?.length ? allUsers.map(u => {
+    const md=(prog||[]).filter(p=>p.user_id===u.id&&p.completed).length;
+    const qz=(quiz||[]).filter(q=>q.user_id===u.id).length;
+    return `<tr><td style="font-family:'Space Mono',monospace;font-size:0.7rem;">${u.wallet_address.slice(0,8)}...${u.wallet_address.slice(-4)}</td>
+      <td>${u.display_name||'—'}</td><td><span class="pill gold">${md}/6</span></td>
+      <td>${qz}</td><td style="color:var(--muted);">${new Date(u.created_at).toLocaleDateString()}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:24px;">No students yet.</td></tr>';
+}
+
+async function exportCSV() {
+  const [{data:users},{data:prog},{data:quiz}] = await Promise.all([
+    dbGet('users','order=created_at.desc'), dbGet('progress','select=*'), dbGet('quiz_results','passed=eq.true')
+  ]);
+  const rows=[['Wallet','Name','Email','Modules','Quizzes','Joined']];
+  (users||[]).forEach(u=>rows.push([u.wallet_address,u.display_name||'',u.email||'',(prog||[]).filter(p=>p.user_id===u.id&&p.completed).length,(quiz||[]).filter(q=>q.user_id===u.id).length,u.created_at]));
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n'));
+  a.download='fanoscoin-students.csv'; a.click();
+}
+
+// ─── TOAST ───
+function showToast(msg, type='info') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' show';
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3200);
+}
+
+// ─── BUTTON + METAMASK EVENTS ───
+document.getElementById('connectBtn').addEventListener('click', connectWallet);
+
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', function(accounts) {
+    if (!accounts.length) disconnect();
+    else { S.wallet = accounts[0].toLowerCase(); if (document.getElementById('portal').style.display !== 'none') disconnect(); }
+  });
+  window.ethereum.on('chainChanged', function() { location.reload(); });
+}
+</script>
+</body>
+</html>
